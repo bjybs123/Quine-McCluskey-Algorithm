@@ -4,7 +4,7 @@ using namespace std;
 
 int main()
 {
-	cout << "commit!!\n";
+	cout << "sssssscommit!!\n";
 
 	return 0;
 }
