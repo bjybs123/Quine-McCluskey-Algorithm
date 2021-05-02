@@ -76,37 +76,46 @@ void AddNode(Data** head, unsigned int bit_length, char* input_binary) //Linked 
 		Data* cur = *head;
 		Data* next = cur->link;
 
-		while ((cur->link != NULL)&&(temp->one_num >= next->one_num))
+		while (true)
 		{
-			if (strcmp(cur->binary, temp->binary) == 0)
+			if (strcmp(cur->binary, temp->binary) == 0)			// 같은 binary 가질 경우 현재 값 저장 안함
 			{
 				delete[] temp->binary;
 				delete temp;
 				return;
 			}
+
+			if (cur == *head)			//리스트 맨 앞에 저장되야 할 경우
+			{
+				if (cur->one_num > temp->one_num)
+				{
+					temp->link = cur;
+					*head = temp;
+
+					return;
+				}
+			}
+
+			if (next == NULL)			//리스트 마지막에 저장되야 할 경우
+			{
+				cur->link = temp;
+				temp->link = next;
+			
+				return;
+			}
+
+			if (temp->one_num < next->one_num)		//앞의 노드와 현재 노드 사이에 올 경우
+			{
+				cur->link = temp;
+				temp->link = next;
+
+				return;
+			}
+
 			cur = cur->link;
 			next = cur->link;
 		}
-
-		next = cur->link;
-
-
-		if (strcmp(cur->binary, temp->binary) == 0)
-		{
-			delete[] temp->binary;
-			delete temp;
-			return;
-		}
-
-
-
-
-		cur->link = temp;
-		temp->link = next;
-
 	}
-
-	return;
 }
 
 void FileToData(Data **allhead, Data**minhead, unsigned short int& bit_length)	//파일로부터 데이터를 입력받는 함수
@@ -169,12 +178,14 @@ void CompareBinary(Data** inputhead, Data* compare1, Data* compare2, unsigned sh
 {
 	int dif = 0;
 	char* result = new char[bit_length];
+
 	for (int i = 0; i < bit_length; i++)
 	{
 		if (compare1->binary[i] != compare2->binary[i])
 		{
 			if (compare1->binary[i] == '-' || compare2->binary[i] == '-')
 			{
+				delete[] result;
 				return;
 			}
 			result[i] = '-';
@@ -192,5 +203,6 @@ void CompareBinary(Data** inputhead, Data* compare1, Data* compare2, unsigned sh
 		compare1->check = true;
 		compare2->check = true;
 	}
+	delete[] result;
 	return;
 }
