@@ -21,6 +21,27 @@ void AddNode(Data**, unsigned int, char*);		//노드 추가 함수
 void FileToData(Data**, Data**, unsigned short int&);
 void PrintNode(Data* head);		//노드 출럭 함수
 void CompareBinary(Data**, Data*, Data*, unsigned short int);
+void compareGroup(Data** insert, Data* group1, Data* group2, unsigned short bit_length);
+
+void compareGroup(Data** insert, Data* group1, Data* group2, unsigned short bit_length)
+{
+	Data* tempNode = group1;
+	Data* compareNode = group2;
+	int tempOneNum = tempNode->one_num;
+
+
+
+	while (tempNode != nullptr && tempNode->one_num == tempOneNum)
+	{
+		while (compareNode != nullptr && (compareNode->one_num == tempOneNum + 1))
+		{
+			CompareBinary(insert, tempNode, compareNode, bit_length);
+			compareNode = compareNode->link;
+		}
+		tempNode = tempNode->link;
+	}
+}
+
 
 int main() 
 {
@@ -31,15 +52,17 @@ int main()
 
 	FileToData(&allhead, &minhead, bit_length);
 
-	Data* comparehead = NULL;
-	CompareBinary(&comparehead, allhead, minhead, bit_length);
+	Data* PIHead = NULL;
+
+	//Find(allhead, PIHead);
+	compareGroup(&PIHead, allhead, minhead, 4);
 
 	cout << "M+D" << endl;
 	PrintNode(allhead);
 	cout << "\nM" << endl;
 	PrintNode(minhead);
 	cout << "\nCompare" << endl;
-	PrintNode(comparehead);
+	PrintNode(PIHead);
 	return 0;
 }
 
@@ -177,9 +200,9 @@ void PrintNode(Data* head)		//Linked list 출력
 void CompareBinary(Data** inputhead, Data* compare1, Data* compare2, unsigned short int bit_length)
 {
 	int dif = 0;
-	char* result = new char[bit_length];
-
-	for (int i = 0; i < bit_length; i++)
+	char* result = new char[bit_length + 1];
+	int i;
+	for (i = 0; i < bit_length; i++)
 	{
 		if (compare1->binary[i] != compare2->binary[i])
 		{
@@ -196,6 +219,7 @@ void CompareBinary(Data** inputhead, Data* compare1, Data* compare2, unsigned sh
 			result[i] = compare1->binary[i];
 		}
 	}
+	result[i] = '\0';
 
 	if (dif == 1)
 	{
