@@ -1,1 +1,0 @@
-# Quine_McClusky_Algorithm
