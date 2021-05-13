@@ -4,6 +4,8 @@
 
 using namespace std;
 
+bool grayCode(char*, char*);
+
 class Node
 {
 private:
@@ -23,7 +25,7 @@ public:
 	char* getBinary();
 	void setBinary(char*);
 	unsigned short getOneNum();
-	
+
 };
 
 class Link
@@ -36,6 +38,8 @@ public:
 	void setHead(Node* headIn);
 	void addNode(unsigned short bit_legth, char* input_binary);
 	void print();
+	void Find(Link*);
+	void groupCompare(Node*, Node*);
 };
 
 
@@ -78,7 +82,7 @@ char* Node::getBinary()
 }
 void Node::setBinary(char* binaryIn)
 {
-	
+
 	int i = 0;
 	while (binaryIn[i] != '\0')
 	{
@@ -125,7 +129,7 @@ void Link::addNode(unsigned short bit_length, char* input_binary)
 		{
 			if (strcmp(curNode->getBinary(), newNode->getBinary()) == 0)
 				return;
-			
+
 			if (curNode == pHead)
 			{
 				if (curNode->getOneNum() > newNode->getOneNum())
@@ -149,7 +153,7 @@ void Link::addNode(unsigned short bit_length, char* input_binary)
 			}
 			curNode = curNode->getNext();
 		}
-		
+
 	}
 
 
@@ -164,4 +168,36 @@ void Link::print()
 		tempNode = tempNode->getNext();
 	}
 }
+void Link::Find(Link* Pi)
+{
+	Node* preMark = pHead;
+	Node* postMark = pHead;
 
+	while (postMark)
+	{
+		if (postMark->getOneNum() != preMark->getOneNum())
+		{
+			Pi->groupCompare(preMark, postMark);
+			preMark = postMark;
+		}
+
+		postMark = postMark->getNext();
+	}
+
+}
+void Link::groupCompare(Node* preNode, Node* postNode)
+{
+	;
+}
+
+bool grayCode(char* comStr1, char* comStr2)
+{
+	int i, dif;
+	i = dif = 0;
+	while (comStr2[i] != '\0')
+	{
+		if (comStr1[i] != comStr2[i])
+			++dif;
+	}
+	return dif == 1 ? true : false;
+}
