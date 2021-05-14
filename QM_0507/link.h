@@ -17,6 +17,7 @@ private:
 
 public:
 	Node();
+	~Node();
 	Node(unsigned short);
 	Node* getNext();
 	bool getCheck();
@@ -34,12 +35,13 @@ private:
 	Node* pHead;
 public:
 	Link();
+	~Link();
 	Node* getHead();
 	void setHead(Node* headIn);
 	void addNode(unsigned short bit_legth, char* input_binary);
 	void print();
-	void Find(Link*);
-	void groupCompare(Node*, Node*);
+	void Find(Link*, unsigned short);
+	void groupCompare(Node*, Node*, Link*);
 };
 
 
@@ -52,6 +54,11 @@ Node::Node()
 	binary = NULL;
 	next = nullptr;
 	one_num = 0;
+}
+Node::~Node()
+{
+	delete[] binary;
+
 }
 Node::Node(unsigned short length)
 {
@@ -103,6 +110,15 @@ unsigned short Node::getOneNum()
 Link::Link()
 {
 	pHead = nullptr;
+}
+Link::~Link()
+{
+	Node* tempNode = pHead;
+	while (pHead)
+	{
+		pHead = pHead->getNext();
+		delete tempNode;
+	}
 }
 Node* Link::getHead()
 {
@@ -168,26 +184,72 @@ void Link::print()
 		tempNode = tempNode->getNext();
 	}
 }
-void Link::Find(Link* Pi)
+void Link::Find( Link* PI, unsigned short bit_length)
 {
 	Node* preMark = pHead;
 	Node* postMark = pHead;
+	
+	Link compared;
 
 	while (postMark)
 	{
-		if (postMark->getOneNum() != preMark->getOneNum())
+		if ((postMark->getOneNum() - preMark->getOneNum()) == 1)
 		{
-			Pi->groupCompare(preMark, postMark);
-			preMark = postMark;
+			compared.groupCompare(preMark, postMark);
 		}
-
+		
+		if ((postMark->getOneNum() - preMark->getOneNum()) != 0)
+		{
+			while (preMark != postMark)
+			{
+				if (preMark->getCheck() == false)
+				{
+					PI->addNode(bit_length, preMark->getBinary());
+					preMark = preMark->getNext();
+				}
+			}
+		}
+		
 		postMark = postMark->getNext();
 	}
 
+	while (preMark != NULL)
+	{
+		if (preMark->getCheck() == false)
+		{
+			PI->addNode(bit_length, preMark->getBinary());
+			preMark = preMark->getNext();
+		}
+
+	}
+
+	if (compared.getHead() == NULL)
+	{
+		return;
+	}
+	
+	compared.Find(PI, bit_length);
+	return;
 }
-void Link::groupCompare(Node* preNode, Node* postNode)
+void Link::groupCompare(Node* preNode, Node* postNode, Link* PI)
 {
-	;
+	Node* tempPre = preNode;
+	Node* tempPost = postNode;
+
+	while (preNode->getOneNum() == tempPre->getOneNum())
+	{
+		while (postNode->getOneNum() == tempPost->getOneNum())
+		{
+			if (grayCode(tempPre->getBinary(), tempPost->getBinary()))
+			{
+				tempPre->setCheck(true);
+				tempPost->setCheck(true);
+			}
+			tempPost = tempPost->getNext();
+		}
+		tempPre = tempPre->getNext();
+	}
+	
 }
 
 bool grayCode(char* comStr1, char* comStr2)
