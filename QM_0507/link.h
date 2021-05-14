@@ -4,7 +4,7 @@
 
 using namespace std;
 
-bool grayCode(char*, char*);
+
 
 class Node
 {
@@ -41,7 +41,8 @@ public:
 	void addNode(unsigned short bit_legth, char* input_binary);
 	void print();
 	void Find(Link*, unsigned short);
-	void groupCompare(Node*, Node*, Link*);
+	void groupCompare(Node*, Node*, unsigned short);
+	void compareBinary(Node* compare1, Node* compare2, unsigned short bit_length);
 };
 
 
@@ -57,7 +58,6 @@ Node::Node()
 }
 Node::~Node()
 {
-	delete[] binary;
 
 }
 Node::Node(unsigned short length)
@@ -117,7 +117,6 @@ Link::~Link()
 	while (pHead)
 	{
 		pHead = pHead->getNext();
-		delete tempNode;
 	}
 }
 Node* Link::getHead()
@@ -163,8 +162,8 @@ void Link::addNode(unsigned short bit_length, char* input_binary)
 			}
 			if (newNode->getOneNum() < curNode->getNext()->getOneNum())
 			{
-				curNode->setNext(newNode);
 				newNode->setNext(curNode->getNext());
+				curNode->setNext(newNode);
 				return;
 			}
 			curNode = curNode->getNext();
@@ -184,20 +183,20 @@ void Link::print()
 		tempNode = tempNode->getNext();
 	}
 }
-void Link::Find( Link* PI, unsigned short bit_length)
+void Link::Find(Link* PI, unsigned short bit_length)
 {
 	Node* preMark = pHead;
 	Node* postMark = pHead;
-	
+
 	Link compared;
 
 	while (postMark)
 	{
 		if ((postMark->getOneNum() - preMark->getOneNum()) == 1)
 		{
-			compared.groupCompare(preMark, postMark);
+			compared.groupCompare(preMark, postMark, bit_length);
 		}
-		
+
 		if ((postMark->getOneNum() - preMark->getOneNum()) != 0)
 		{
 			while (preMark != postMark)
@@ -205,11 +204,11 @@ void Link::Find( Link* PI, unsigned short bit_length)
 				if (preMark->getCheck() == false)
 				{
 					PI->addNode(bit_length, preMark->getBinary());
-					preMark = preMark->getNext();
 				}
+				preMark = preMark->getNext();
 			}
 		}
-		
+
 		postMark = postMark->getNext();
 	}
 
@@ -218,8 +217,8 @@ void Link::Find( Link* PI, unsigned short bit_length)
 		if (preMark->getCheck() == false)
 		{
 			PI->addNode(bit_length, preMark->getBinary());
-			preMark = preMark->getNext();
-		}
+		}	
+		preMark = preMark->getNext();
 
 	}
 
@@ -227,39 +226,54 @@ void Link::Find( Link* PI, unsigned short bit_length)
 	{
 		return;
 	}
-	
+
 	compared.Find(PI, bit_length);
 	return;
 }
-void Link::groupCompare(Node* preNode, Node* postNode, Link* PI)
+void Link::groupCompare(Node* preNode, Node* postNode, unsigned short bit_length)
 {
 	Node* tempPre = preNode;
 	Node* tempPost = postNode;
 
 	while (preNode->getOneNum() == tempPre->getOneNum())
 	{
-		while (postNode->getOneNum() == tempPost->getOneNum())
+		while (tempPost != NULL && postNode->getOneNum() == tempPost->getOneNum())
 		{
-			if (grayCode(tempPre->getBinary(), tempPost->getBinary()))
-			{
-				tempPre->setCheck(true);
-				tempPost->setCheck(true);
-			}
+			compareBinary(tempPre, tempPost, bit_length);
 			tempPost = tempPost->getNext();
 		}
 		tempPre = tempPre->getNext();
+		tempPost = postNode;
 	}
-	
-}
 
-bool grayCode(char* comStr1, char* comStr2)
+}
+void Link::compareBinary(Node* compare1, Node* compare2, unsigned short bit_length)
 {
-	int i, dif;
-	i = dif = 0;
-	while (comStr2[i] != '\0')
+	int dif = 0;
+	char* result = new char[bit_length];
+	for (int i = 0; i < bit_length; ++i)
 	{
-		if (comStr1[i] != comStr2[i])
-			++dif;
+		if (compare1->getBinary()[i] != compare2->getBinary()[i])
+		{
+			if (compare1->getBinary()[i] == '-' || compare2->getBinary()[i] == '-')
+			{
+				delete[] result;
+				return;
+			}
+			result[i] = '-';
+			dif++;
+		}
+		else
+		{
+			result[i] = compare1->getBinary()[i];
+		}
 	}
-	return dif == 1 ? true : false;
+	if (dif == 1)
+	{
+		addNode(bit_length, result);
+		compare1->setCheck(true);
+		compare2->setCheck(true);
+	}
+	delete[] result;
+	return;
 }

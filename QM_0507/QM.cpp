@@ -9,12 +9,18 @@ int main()
 {
 	Link* allhead = new Link();
 	Link* minhead = new Link();
-
+	Link* PI = new Link();
 	unsigned short bit_length = 0;
 
 	FiletoData(allhead, minhead, bit_length);
 
 	allhead->print();
+
+	allhead->Find(PI, bit_length);
+
+	cout << "\n";
+	PI->print();
+
 
 }
 
@@ -45,7 +51,7 @@ void FiletoData(Link* allhead, Link* minhead, unsigned short& bit_length)
 		{
 			allhead->addNode(bit_length, binary);
 		}
-		else if (MorD == 'd')
+		else if (MorD == 'd'|| MorD == 'D')
 		{
 			allhead->addNode(bit_length, binary);
 		}
