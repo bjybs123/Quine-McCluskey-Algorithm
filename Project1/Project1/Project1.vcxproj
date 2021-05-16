@@ -145,7 +145,7 @@
     <Text Include="input_minterm.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="헤더.h" />
+    <ClInclude Include="link.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
