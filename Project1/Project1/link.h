@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 
 #include <iostream>
 
@@ -280,17 +281,15 @@ void Link::compareBinary(Node* compare1, Node* compare2, unsigned short bit_leng
 
 
 
-
+/*
 class EPI {
-	char*** Epim;
-	char** aaa;
 	int temp = 10000;
-	unsigned short bit_length;
+	unsigned short bit_length = 4;
 public:
-
-	void TranNum() {
+	char** aaa;
+	void TranNum(char *** Epim) {
 		int tran = 0;
-		int tall;
+		int tall = 0;
 		for (int i = 0; Epim[i] == NULL; i++) {
 			for (int t = 0; Epim[t][i] == NULL; i++) {
 				tall++;
@@ -315,7 +314,7 @@ public:
 					}
 				}
 			}
-			
+
 			tran = tran + tall * 2 + 2;
 
 			if (temp > tran) {
@@ -326,23 +325,148 @@ public:
 			tall = 0;
 
 		}
-		
 
-		
+
+		for (int i = 0; aaa[i] = NULL; i++) {
+			cout << aaa[i] << "\t";
+		}
+		cout << "Transister Number : " << temp << endl;
+
 	};
-
 	
+
 };
-Epim[0][0] = 1011
-Epim[0][1] = _10_
-Epim[0][2] = 1001
 
-Epim[1][0]
-Epim[1][1]
-Epim[1][2]
-Epim[1][3]
+*/
 
-Epim[2][0]
-Epim[2][1]
+void TranNum(char*** Epim, unsigned short bit_length) {
+	char** aaa = NULL;
 
-"1011 + _10_ + 1001 tran num = 14"
+	aaa = new char* [4];
+	for (int i = 0; i < 4; i++) {
+		aaa[i] = new char[4];
+	}
+
+
+	int temp = 1111111;
+	int tran = 0;
+	int tall = 0;
+
+	for (int i = 0; Epim[i] == NULL; i++) {
+		for (int t = 0; Epim[t][i] == NULL; i++) {
+			tall++;
+		}
+	}
+
+	for (int t = 0; t < 3; t++) {
+
+
+		for (int i = 0; Epim[t][i] == NULL; i++) {
+			tall++;
+		}
+
+		for (int i = 0; i < bit_length; i++) {
+
+
+
+			for (int k = 0; k < tall; k++) {
+				if (Epim[t][k][i] == '0') {
+					tran += 2;
+					break;
+				}
+			}
+		}
+
+		tran = tran + tall * 2 + 2;
+		cout << tran << endl;
+
+		if (temp > tran) {
+			aaa = Epim[t];
+			temp = tran;
+			//cout << temp << endl;
+		}
+
+		tran = 0;
+		tall = 0;
+
+	}
+
+
+	for (int i = 0; aaa[i] == NULL; i++) {
+		for (int k = 0; aaa[i][k] == NULL; k++) {
+			cout << aaa[i][k];
+		}
+		cout << "+";
+	}
+
+
+	cout << "Transister Number : " << temp << endl;
+
+};
+/*
+int main(void)
+{
+
+	char*** Epim = NULL;
+
+
+	Epim = new char** [4];
+	for (int x = 0; x < 4; x++)
+	{
+		Epim[x] = new char* [4];
+		for (int y = 0; y < 4; y++)
+		{
+			Epim[x][y] = new char[4];
+		}
+	}
+	/*
+
+	char e[4][4][4] = { {'1','1','1','1'}, {'1','1','1','0'},  {'1','1','0','1',} ,{'1','0','1','1'} };
+
+	Epim[0][0][0] = '1';
+	Epim[0][0][1] = '1';
+	Epim[0][0][2] = '1';
+	Epim[0][0][3] = '1';
+
+	Epim[0][1][0] = '_';
+	Epim[0][1][1] = '1';
+	Epim[0][1][2] = '1';
+	Epim[0][1][3] = '_';
+
+	Epim[0][2][0] = '0';
+	Epim[0][2][1] = '1';
+	Epim[0][2][2] = '1';
+	Epim[0][2][3] = '1';
+	//--------------------------------------
+	Epim[1][0][0] = '-';
+	Epim[1][0][1] = '-';
+	Epim[1][0][2] = '-';
+	Epim[1][0][3] = '1';
+
+	Epim[1][1][0] = '0';
+	Epim[1][1][1] = '1';
+	Epim[1][1][2] = '1';
+	Epim[1][1][3] = '-';
+
+	Epim[1][2][0] = '1';
+	Epim[1][2][1] = '1';
+	Epim[1][2][2] = '1';
+	Epim[1][2][3] = '0';
+	//-----------------------------------
+	Epim[2][0][0] = '1';
+	Epim[2][0][1] = '1';
+	Epim[2][0][2] = '1';
+	Epim[2][0][3] = '1';
+
+	Epim[2][1][0] = '0';
+	Epim[2][1][1] = '1';
+	Epim[2][1][2] = '1';
+	Epim[2][1][3] = '1';
+
+	Epim[2][2][0] = '0';
+	Epim[2][2][1] = '-';
+	Epim[2][2][2] = '1';
+	Epim[2][2][3] = '-';
+	
+	TranNum(Epim, 4);
+}*/
