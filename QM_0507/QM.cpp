@@ -1,11 +1,12 @@
 #include <fstream>
 #include "link.h"
 
+
+
 void FiletoData(Link*, Link*, unsigned short& bit_length);
 
 int main()
 {
-	Link* epi = new Link();
 	Link* allhead = new Link();
 	Link* minhead = new Link();
 	Link* PI = new Link();
@@ -20,16 +21,6 @@ int main()
 	cout << "\n";
 	PI->print();
 
-	PI->findEPI(epi, minhead, bit_length);
-
-
-	cout << "\nafter get epis\n";
-
-	cout << "pis\n";
-	PI->print();
-
-	cout << "\nepis\n";
-	epi->print();
 
 }
 
@@ -59,7 +50,6 @@ void FiletoData(Link* allhead, Link* minhead, unsigned short& bit_length)
 		if (MorD == 'm' || MorD == 'M')
 		{
 			allhead->addNode(bit_length, binary);
-			minhead->addNode(bit_length, binary);
 		}
 		else if (MorD == 'd'|| MorD == 'D')
 		{
