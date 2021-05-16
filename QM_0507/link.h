@@ -4,14 +4,28 @@
 
 using namespace std;
 
-
+bool isSame(char* str1, char* str2)
+{
+	int i = 0;
+	int dif = 0;
+	while (str1[i] && str2[i])
+	{
+		if (str1[i] != str2[i])
+		{
+			if (str1[i] != '-' && str2[i] != '-')
+				++dif;
+		}
+		++i;
+	}
+	return dif == 0 ? true : false;
+}
 
 class Node
 {
 private:
 
 	Node* next;
-	bool check;
+	int check;
 	char* binary;
 	unsigned short one_num;
 
@@ -20,13 +34,17 @@ public:
 	~Node();
 	Node(unsigned short);
 	Node* getNext();
-	bool getCheck();
-	void setCheck(bool);
+	int getCheck();
+	void setCheck(int);
 	void setNext(Node* nextIn);
 	char* getBinary();
 	void setBinary(char*);
 	unsigned short getOneNum();
-
+	void checkIncrease()
+	{
+		check++;
+	}
+	
 };
 
 class Link
@@ -43,6 +61,26 @@ public:
 	void Find(Link*, unsigned short);
 	void groupCompare(Node*, Node*, unsigned short);
 	void compareBinary(Node* compare1, Node* compare2, unsigned short bit_length);
+	void findEPI(Link* epi, Link* minhead, unsigned short bit_length);
+	void deleteNode(char* binaryIn) {
+		Node* prevNode = nullptr;
+		Node* currNode = pHead;
+		while (currNode && strcmp(currNode->getBinary(), binaryIn))
+		{
+			prevNode = currNode;
+			currNode = currNode->getNext();
+		}
+		if (currNode) {
+			if (prevNode) {
+				prevNode->setNext(currNode->getNext());
+				delete currNode;
+			}
+			else {
+				pHead = currNode->getNext();
+				delete currNode;
+			}
+		}
+	}
 };
 
 
@@ -67,11 +105,11 @@ Node::Node(unsigned short length)
 	one_num = 0;
 	binary = new char[length];
 }
-bool Node::getCheck()
+int Node::getCheck()
 {
 	return check;
 }
-void Node::setCheck(bool checkIn)
+void Node::setCheck(int checkIn)
 {
 	check = checkIn;
 }
@@ -217,7 +255,7 @@ void Link::Find(Link* PI, unsigned short bit_length)
 		if (preMark->getCheck() == false)
 		{
 			PI->addNode(bit_length, preMark->getBinary());
-		}	
+		}
 		preMark = preMark->getNext();
 
 	}
@@ -277,3 +315,61 @@ void Link::compareBinary(Node* compare1, Node* compare2, unsigned short bit_leng
 	delete[] result;
 	return;
 }
+
+void Link::findEPI(Link* epi, Link* minhead, unsigned short bit_length)
+{
+	int includeNum;
+	Node* piNode = pHead;
+	Node* minNode = minhead->getHead();
+	while (minNode)
+	{
+		Node* EPI = nullptr;
+		includeNum = 0;
+		while (piNode)
+		{
+			if (isSame(minNode->getBinary(), piNode->getBinary()) == true)
+			{
+				piNode->checkIncrease();
+				EPI = piNode;
+				++includeNum;
+			}
+			piNode = piNode->getNext();
+		}
+		if (includeNum == 1)
+		{
+			epi->addNode(bit_length, EPI->getBinary());
+			deleteNode(EPI->getBinary());
+		}
+		minNode->setCheck(includeNum);
+		piNode = pHead;
+		minNode = minNode->getNext();
+	}
+
+
+	/*  Print check
+	
+	cout << "\n\nminHead\n";
+	minNode = minhead->getHead();
+	while (minNode)
+	{
+
+		cout << "binary : " << minNode->getBinary() << "\n";
+		cout << "minnode check : " << minNode->getCheck() <<  "\n";
+		minNode = minNode->getNext();
+	}
+
+	cout << "\n\npiHead\n";
+	piNode = pHead;
+	while (piNode)
+	{
+		cout << "binary : " << piNode->getBinary() << "\n";
+		cout << "pinode check : " << piNode->getCheck() << "\n";
+		piNode = piNode->getNext();
+	}
+	*/
+}
+
+
+
+
+
