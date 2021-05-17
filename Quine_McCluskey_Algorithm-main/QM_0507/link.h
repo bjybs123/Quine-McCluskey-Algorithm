@@ -301,6 +301,7 @@ bool Node::compareMinAndPI(Node* minnode, unsigned short bit_length)
 
 
 class Sums
+
 {
 private:
 	char*** product;
@@ -364,7 +365,7 @@ char* Sums::getProduct(int x, int y)
 {
 	return product[x][y];
 }
-bool Sums::setProduct(int x, int y, char* inputproduct, unsigned short bit_length)
+bool Sums::setProduct(int x, int y, char* inputproduct, unsigned short bit_length)		//수정 필요
 {
 	for (int i = 0; i < y - 1; i++)
 	{
@@ -513,8 +514,6 @@ public:
 };
 
 
-
-
 Sums* Pos::getHead(void)
 {
 	return phead;
@@ -546,7 +545,7 @@ void Pos::addLinkToPos(Link* inputLink, Link* minLink, unsigned short bit_length
 		{
 			if (inputTemp->compareMinAndPI(minTemp, bit_length))
 			{
-				posTemp->setProduct(count, 0, minTemp->getBinary(), bit_length);
+				posTemp->setProduct(count, 1, minTemp->getBinary(), bit_length);
 				count++;
 			}
 			inputTemp = inputTemp->getNext();
