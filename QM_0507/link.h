@@ -1,8 +1,23 @@
-#pragma once
+﻿#pragma once
 
 #include <iostream>
 
+
+
 using namespace std;
+
+void my_strcpy(char* str1, char* str2)
+{
+	int i = 0;
+	while (str2[i] != '\0')
+	{
+		str1[i] = str2[i];
+		++i;
+	}
+	str1[i] = '\0';
+	return;
+}
+
 
 bool isSame(char* str1, char* str2)
 {
@@ -371,5 +386,357 @@ void Link::findEPI(Link* epi, Link* minhead, unsigned short bit_length)
 
 
 
+class Sums
+
+{
+private:
+	char*** product;
+	int product_num;
+	int sum_num;
+	Sums* next;
+
+public:
+	Sums();
+	~Sums();
+	int getProduct_num();
+	void setProduct_num(int);
+	int getSum_num();
+	void setSum_num(int);
+	char* getProduct(int, int);
+	bool setProduct(int, int, char*, unsigned short);
+	char** getProductarr(int);
+	Sums* getNext();
+	void setNext(Sums*);
+	void deleteProduct(int);
+
+	bool compareSum(int i1, unsigned short);
+
+};
+
+Sums::Sums() { product = NULL; product_num = 0; sum_num = NULL; next = NULL; }
+Sums::~Sums() {}
+int Sums::getProduct_num(void)
+{
+	return product_num;
+}
+void Sums::setProduct_num(int inputnum)
+{
+	product_num = inputnum;
+	product = new char** [product_num];
+	for (int i = 0; i < product_num; i++)
+	{
+		product[i] = NULL;
+	}
+
+	return;
+}
+int Sums::getSum_num()
+{
+	return sum_num;
+}
+void Sums::setSum_num(int inputnum)
+{
+	sum_num = inputnum;
+	for (int i = 0; i < sum_num; i++)
+	{
+		product[i] = new char* [sum_num];
+		for (int j = 0; j < sum_num; j++)
+		{
+			product[i][j] = NULL;
+		}
+	}
+	return;
+}
+char* Sums::getProduct(int x, int y)
+{
+	return product[x][y];
+}
+bool Sums::setProduct(int x, int y, char* inputproduct, unsigned short bit_length)		//¼öÁ¤ ÇÊ¿ä
+{
+	for (int i = 0; i < y - 1; i++)
+	{
+		if (strcmp(product[x][y], inputproduct) == 0)
+		{
+			return false;
+		}
+	}
+
+	product[x][y] = new char[bit_length];
+	my_strcpy(product[x][y], inputproduct);
+
+	return true;
+}
+char** Sums::getProductarr(int x)
+{
+	return product[x];
+}
+Sums* Sums::getNext(void)
+{
+	return next;
+}
+void Sums::setNext(Sums* inputnext)
+{
+	next = inputnext;
+	return;
+}
+
+void Sums::deleteProduct(int del_num)
+{
+	for (int j = 0; j < sum_num && product[del_num][j] != NULL; j++)
+	{
+		delete[] product[del_num][j];
+	}
+
+	return;
+}
+
+bool Sums::compareSum(int i1, unsigned short bit_length)
+{
+	int count1;
+
+	for (count1 = 0; count1 < sum_num; count1++)
+	{
+		if (product[i1][count1] != NULL)
+			count1++;
+	}
+
+	for (int i2 = 0; i2 < i1; i2++)
+	{
+		int count2;
+		for (count2 = 0; count2 < sum_num; count2++)
+		{
+			if (product[i2][count2] != NULL)
+				count2++;
+		}
 
 
+		if (count1 >= count2)
+		{
+			bool state = true;
+			for (int j2 = 0; j2 < count2; j2++)
+			{
+				bool state1 = false;
+				for (int j1 = 0; j1 < count1; j1++)
+				{
+					if (strcmp(product[i2][j2], product[i1][j1]) == 0)
+					{
+						state1 = true;
+					}
+				}
+				if (state1 == false)
+				{
+					state = false;
+				}
+			}
+
+			if (state == true)
+			{
+				for (int j1 = 0; j1 < count1; j1++)
+				{
+					delete[] product[i1][j1];
+				}
+				return false;
+			}
+		}
+		else
+		{
+			bool state = true;
+			for (int j1 = 0; j1 < count1; j1++)
+			{
+				bool state1 = false;
+				for (int j2 = 0; j2 < count2; j2++)
+				{
+					if (strcmp(product[i2][j2], product[i1][j1]) == 0)
+					{
+						state1 = true;
+					}
+				}
+				if (state1 == false)
+				{
+					state = false;
+				}
+			}
+
+			if (state == true)
+			{
+				for (int j2 = 0; j2 < count2; j2++)
+				{
+					delete[] product[i2][j2];
+
+					for (int j = 0; j < count1; j++)
+					{
+						setProduct(i2, j, product[i1][j], bit_length);
+					}
+
+					for (int j1 = 0; j1 < count1; j1++)
+					{
+						delete[] product[i1][j1];
+					}
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
+
+
+
+class Pos
+{
+private:
+	Sums* head;
+
+public:
+	Pos() { head = NULL; }
+
+	Sums* getHead(void);
+	void setHead(Sums* headIn);
+	void addLinkToPos(Link*, Link*, unsigned short);
+	void combinePos(unsigned short);
+	void printPos(void);
+
+};
+
+
+Sums* Pos::getHead(void)
+{
+	return head;
+}
+void Pos::setHead(Sums* headIn)
+{
+	head = headIn;
+	return;
+}
+
+void Pos::addLinkToPos(Link* inputLink, Link* minLink, unsigned short bit_length)
+{
+	Node* inputTemp = inputLink->getHead();
+	Node* minTemp = minLink->getHead();
+
+	Sums* posTemp;
+
+	Sums* head = getHead();
+
+	while (minTemp != NULL)
+	{
+		int count1 = 0;
+		posTemp = new Sums();
+		posTemp->setProduct_num(minTemp->getCheck());
+
+		int num = 0;
+
+		posTemp->setSum_num(1);
+
+		int count = 0;
+
+		if (count1 == 0)
+		{
+			head = posTemp;
+		}
+		while (inputTemp != NULL)
+		{
+			if (isSame(inputTemp->getBinary(),minTemp->getBinary()))
+			{
+				posTemp->setProduct(count, 1, minTemp->getBinary(), bit_length);
+				count++;
+			}
+			inputTemp = inputTemp->getNext();
+		}
+		posTemp = posTemp->getNext();
+		minTemp = minTemp->getNext();
+		inputTemp = inputLink->getHead();
+		count1++;
+
+	}
+	setHead(head);
+
+	return;
+}
+void Pos::combinePos(unsigned short bit_length)
+{
+	Sums* curTemp = getHead();
+
+	if (curTemp == NULL && curTemp->getNext() == NULL)
+	{
+		return;
+	}
+
+	Sums* combined = new Sums;
+
+	combined->setProduct_num(curTemp->getProduct_num() * curTemp->getNext()->getProduct_num());
+
+	int i_com = 0;
+	int max_size = 0;
+	for (int i1 = 0; i1 < curTemp->getProduct_num(); i1++)
+	{
+		for (int i2 = 0; i2 < curTemp->getNext()->getProduct_num(); i2++, i_com++)
+		{
+			if (max_size < curTemp->getSum_num() + curTemp->getNext()->getSum_num())
+			{
+				max_size = curTemp->getSum_num() + curTemp->getNext()->getSum_num();
+			}
+		}
+	}
+	combined->setSum_num(max_size);
+
+	i_com = 0;
+	int max_j_com = 0;
+	for (int i1 = 0; i1 < curTemp->getProduct_num(); i1++)
+	{
+		for (int i2 = 0; i2 < curTemp->getNext()->getProduct_num(); i2++)
+		{
+			int j_com = 0;
+
+			for (int j1 = 0; curTemp->getProduct(i1, j1) != NULL && j1 < curTemp->getSum_num(); j1++)
+			{
+				if (combined->setProduct(i_com, j_com, curTemp->getProduct(i1, j1), bit_length))
+				{
+					j_com++;
+				}
+			}
+			for (int j2 = 0; curTemp->getNext()->getProduct(i2, j2) != NULL && j2 < curTemp->getNext()->getSum_num(); j2++)
+			{
+				if (combined->setProduct(i_com, j_com, curTemp->getNext()->getProduct(i2, j2), bit_length))
+				{
+					j_com++;
+				}
+			}
+			if (max_j_com < j_com)
+			{
+				max_j_com = j_com;
+			}
+
+			if (combined->compareSum(i_com, bit_length) == true)
+			{
+				i_com++;
+			}
+		}
+	}
+
+	combined->setNext(curTemp->getNext()->getNext());
+	setHead(combined);
+
+	combinePos(bit_length);
+	return;
+}
+
+void Pos::printPos(void)
+{
+	Sums* curTemp = getHead();
+
+	while (curTemp != NULL)
+	{
+		for (int i = 0; i < curTemp->getProduct_num() && curTemp->getProductarr(i) != NULL; i++)
+		{
+			for (int j = 0; j < curTemp->getSum_num() && curTemp->getProduct(i, j) != NULL; j++)
+			{
+				cout << curTemp->getProduct(i, j) << "+";
+			}
+			cout << " * ";
+		}
+		cout << endl;
+	}
+	curTemp = curTemp->getNext();
+}
