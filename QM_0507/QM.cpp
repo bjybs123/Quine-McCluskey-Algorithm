@@ -20,13 +20,11 @@ int main()
 	cout << "\n";
 	PI->print();
 
+
+	cout << "befor epi : \n";
+	minhead->print();
 	PI->findEPI(epi, minhead, bit_length);
 
-
-	Pos* PM = new Pos;
-
-	PM->addLinkToPos(PI, minhead, bit_length);
-	PM->combinePos(bit_length);
 
 	cout << "\nafter get epis\n";
 
@@ -36,7 +34,6 @@ int main()
 	cout << "\nepis\n";
 	epi->print();
 
-	PM->printPos();
 
 }
 

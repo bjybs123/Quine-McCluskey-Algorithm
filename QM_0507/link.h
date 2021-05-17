@@ -1,39 +1,8 @@
 ﻿#pragma once
 
-#include <iostream>
+#include "product.h"
 
 
-
-using namespace std;
-
-void my_strcpy(char* str1, char* str2)
-{
-	int i = 0;
-	while (str2[i] != '\0')
-	{
-		str1[i] = str2[i];
-		++i;
-	}
-	str1[i] = '\0';
-	return;
-}
-
-
-bool isSame(char* str1, char* str2)
-{
-	int i = 0;
-	int dif = 0;
-	while (str1[i] && str2[i])
-	{
-		if (str1[i] != str2[i])
-		{
-			if (str1[i] != '-' && str2[i] != '-')
-				++dif;
-		}
-		++i;
-	}
-	return dif == 0 ? true : false;
-}
 
 class Node
 {
@@ -352,6 +321,7 @@ void Link::findEPI(Link* epi, Link* minhead, unsigned short bit_length)
 		}
 		if (includeNum == 1)
 		{
+			minhead->deleteNode(EPI->getBinary());
 			epi->addNode(bit_length, EPI->getBinary());
 			deleteNode(EPI->getBinary());
 		}
@@ -386,13 +356,23 @@ void Link::findEPI(Link* epi, Link* minhead, unsigned short bit_length)
 
 
 
+
+
+
+
+
+
+
+
+
+
+/*
 class Sums
 
 {
 private:
-	char*** product;
-	int product_num;
-	int sum_num;
+	//class Pro* 
+	
 	Sums* next;
 
 public:
@@ -412,6 +392,7 @@ public:
 	bool compareSum(int i1, unsigned short);
 
 };
+
 
 Sums::Sums() { product = NULL; product_num = 0; sum_num = NULL; next = NULL; }
 Sums::~Sums() {}
@@ -740,3 +721,4 @@ void Pos::printPos(void)
 	}
 	curTemp = curTemp->getNext();
 }
+*/

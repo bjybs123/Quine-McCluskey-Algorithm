@@ -23,6 +23,9 @@
     <ClInclude Include="link.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="product.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="input.txt">

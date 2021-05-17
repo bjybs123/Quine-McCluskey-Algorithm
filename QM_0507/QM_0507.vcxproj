@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="link.h" />
+    <ClInclude Include="product.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="input.txt" />
