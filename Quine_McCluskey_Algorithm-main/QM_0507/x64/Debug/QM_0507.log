@@ -1,0 +1,3 @@
+﻿  QM.cpp
+C:\Users\82109\Desktop\Quine_McCluskey_Algorithm-main\QM_0507\link.h(337,6): warning C4101: 'includeNum' :참조되지 않은 지역 변수입니다.
+  QM_0507.vcxproj -> C:\Users\82109\Desktop\Quine_McCluskey_Algorithm-main\x64\Debug\QM_0507.exe
