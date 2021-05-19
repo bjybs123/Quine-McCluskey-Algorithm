@@ -27,12 +27,18 @@ int main()
 
 
 	cout << "\nafter get epis\n";
+	minhead->print();
+
 
 	cout << "pis\n";
+
 	PI->print();
 
 	cout << "\nepis\n";
+
 	epi->print();
+
+
 
 
 }

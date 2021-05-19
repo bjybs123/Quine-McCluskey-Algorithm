@@ -302,30 +302,30 @@ void Link::compareBinary(Node* compare1, Node* compare2, unsigned short bit_leng
 
 void Link::findEPI(Link* epi, Link* minhead, unsigned short bit_length)
 {
-	int includeNum;
 	Node* piNode = pHead;
 	Node* minNode = minhead->getHead();
 	while (minNode)
 	{
 		Node* EPI = nullptr;
-		includeNum = 0;
 		while (piNode)
 		{
 			if (isSame(minNode->getBinary(), piNode->getBinary()) == true)
 			{
 				piNode->checkIncrease();
+				minNode->checkIncrease();
 				EPI = piNode;
-				++includeNum;
 			}
 			piNode = piNode->getNext();
 		}
-		if (includeNum == 1)
+		if (minNode->getCheck() == 1)
 		{
-			minhead->deleteNode(EPI->getBinary());
+			Node* currentNode = minNode->getNext();
+			minhead->deleteNode(minNode->getBinary());
+			minNode = currentNode;
 			epi->addNode(bit_length, EPI->getBinary());
 			deleteNode(EPI->getBinary());
+			continue;
 		}
-		minNode->setCheck(includeNum);
 		piNode = pHead;
 		minNode = minNode->getNext();
 	}
