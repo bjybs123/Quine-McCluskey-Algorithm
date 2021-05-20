@@ -50,6 +50,8 @@ public:
 	product_node* getMultiNext();
 	void insert_multi(char*, unsigned short);
 	product_node* multiply(product_node*, product_node*, unsigned short);
+	void deleteMulti(void);
+	void deletePlus(void);
 };
 
 
@@ -105,28 +107,73 @@ void product_node::insert_multi(char* binaryIn, unsigned short bit_length)
 
 product_node* product_node::multiply(product_node* leftNode, product_node* rightNode, unsigned short bit_length)
 {
+	bool sameState = false;
+	product_node* tempLeft = leftNode;
 	product_node* newNode = new product_node(bit_length);
 	newNode->setBinary(leftNode->getBinary());			//비어있는 노드이기 때문에 처음 값을 임의로 왼쪽 product list에 1번째 곱의 항으로 초기화 해준다.
-
-	while (leftNode->getMultiNext())
+	leftNode = leftNode->getMultiNext();
+	product_node* originTemp = newNode;
+	while (leftNode)
 	{
 		product_node* newTemp = new product_node(bit_length);
-		setBinary(leftNode->getBinary());
+		newTemp->setBinary(leftNode->getBinary());
 		newNode->setMultiNext(newTemp);
-
 		leftNode = leftNode->getMultiNext();
+		newNode = newNode->getMultiNext();
 	}
-
-	while (rightNode->getMultiNext())
+	newNode = originTemp;
+	while (rightNode)
 	{
+		sameState = false;
 		product_node* newTemp = new product_node(bit_length);
-		setBinary(rightNode->getBinary());
+		newTemp->setBinary(rightNode->getBinary());
+		while (newNode->getMultiNext())
+		{
+			if (strcmp(newNode->getBinary(), rightNode->getBinary()) == 0)
+				sameState = true;
+				newNode = newNode->getMultiNext();
+		}
+
+		if (strcmp(newNode->getBinary(), rightNode->getBinary()) == 0)
+			sameState = true;
+
+
+		if (sameState == true)
+		{
+			rightNode = rightNode->getMultiNext();
+			continue;
+		}
 		newNode->setMultiNext(newTemp);
 
 		rightNode = rightNode->getMultiNext();
 	}
 
-	return newNode;
+	return originTemp;
+}
+
+void product_node::deleteMulti(void)
+{
+	if (multiNext != NULL)
+	{
+		multiNext->deleteMulti();
+		delete multiNext;
+	}
+	return;
+}
+
+void product_node::deletePlus(void)
+{
+	if (plusNext != NULL)
+	{
+		plusNext->deletePlus();
+	}
+	deleteMulti();
+	if (plusNext != NULL)
+	{
+		delete plusNext;
+	}
+	
+	return;
 }
 
 
@@ -144,6 +191,8 @@ public:
 	void distribute(Product*, Product*, unsigned short);
 	void insert_plus(char*, unsigned short);
 	void insert_multiplied_node(product_node*);
+	int isSameProduct(product_node*, product_node*);
+	void DeleteSame(unsigned short);
 	void PrintProduct(void);
 };
 
@@ -185,6 +234,7 @@ void Product::insert_plus(char* binaryIn, unsigned short bit_length)
 
 void Product::distribute(Product* cmp1, Product* cmp2, unsigned short bit_length)
 {
+	Product* origin = this;
 	product_node* moveNode1 = cmp1->getHead();
 	product_node* moveNode2 = cmp2->getHead();
 	
@@ -196,22 +246,24 @@ void Product::distribute(Product* cmp1, Product* cmp2, unsigned short bit_length
 	{
 		cout << "right side product is empty\n";
 	}
+
 	while (moveNode1)	//좌측 product list 첫번째 항을 기준으로 분배 시작
 	{
-
 		while (moveNode2)
 		{
 			product_node* multipliedNode = nullptr;
-			multipliedNode = multipliedNode->multiply(cmp1->getHead(), cmp2->getHead(), bit_length);
-			
-			this->insert_multiplied_node(multipliedNode);
 
-			moveNode1 = moveNode1->getPlusNext();	//다음 더하기 항으로 이동
+			multipliedNode = multipliedNode->multiply(moveNode1, moveNode2, bit_length);
+			
+			insert_multiplied_node(multipliedNode);
+
+			moveNode2 = moveNode2->getPlusNext();	//다음 더하기 항으로 이동
 		}
+		moveNode2 = cmp2->getHead();
 		moveNode1 = moveNode1->getPlusNext();	//다음 더하기 항으로 이동
 	}
 }
-void Product::insert_multiplied_node(product_node* nodeIn)
+void Product::insert_multiplied_node(product_node* nodeIn)				//have problem
 {
 	product_node* movingNode = head;
 	if (head == nullptr)
@@ -228,6 +280,148 @@ void Product::insert_multiplied_node(product_node* nodeIn)
 	}
 }
 
+int Product::isSameProduct(product_node* head, product_node* compareHead)		//compareHead가 head에 포함되는지 검사
+{
+	product_node* compare1 = head;
+
+	int count1 = 0;
+	int count2 = 0;
+	while (compare1)
+	{
+		product_node* compare2 = compareHead;
+		int state = false;
+
+		while (compare2)
+		{
+			if (strcmp(compare1->getBinary(), compare2->getBinary()) == 0)
+			{
+				state = true;
+			}
+			compare2 = compare2->getMultiNext();
+			if (count1 == 0)
+			{
+				count2++;
+			}
+		}
+
+		if (state == false)
+		{
+			return -1;
+		}
+		compare1 = compare1->getMultiNext();
+		count1++;
+	}
+	
+	if (count1 == count2)
+	{
+		return 0;
+	}
+
+	return 1;
+}
+
+void Product::DeleteSame(unsigned short bit_length)
+{
+	product_node* compare1Head = head;
+
+	if (compare1Head == NULL || compare1Head->getPlusNext() == NULL)
+	{
+		return;
+	}
+	product_node* insertHead = NULL;
+	product_node* insertTemp = insertHead;
+
+	while (compare1Head)
+	{
+		product_node* compare2Head = head;
+
+		bool state = false;
+
+		while (compare2Head)
+		{
+			if (compare1Head != compare2Head)
+			{
+				if (isSameProduct(compare2Head, compare1Head) == 1)
+				{
+					state = true;
+				}
+			}
+			compare2Head = compare2Head->getPlusNext();
+		}
+		if (state == false)
+		{
+			if (insertHead == NULL)
+			{
+				insertHead = new product_node(bit_length);
+				insertTemp = insertHead;
+
+				insertHead->setBinary(compare1Head->getBinary());
+
+				product_node* temp = compare1Head->getMultiNext();
+				while (temp)
+				{
+					product_node* insert = new product_node(bit_length);
+					insertTemp->setMultiNext(insert);
+					insert->setBinary(temp->getBinary());
+
+					insertTemp = insertTemp->getMultiNext();
+					temp = temp->getMultiNext();
+				}
+			}
+			else
+			{
+				bool state2 = true;
+				insertTemp = insertHead;
+				while (insertTemp)
+				{
+					if (isSameProduct(insertTemp, compare1Head) == 0)
+					{
+						state2 = false;
+					}
+					
+					insertTemp = insertTemp->getPlusNext();
+				}
+
+
+				if (state2 == true)
+				{
+					insertTemp = NULL;
+					product_node* newPlus = insertHead;
+					while (newPlus->getPlusNext())
+					{
+						newPlus = newPlus->getPlusNext();
+					}
+					insertTemp = new product_node(bit_length);
+					newPlus->setPlusNext(insertTemp);
+
+					insertTemp->setBinary(compare1Head->getBinary());
+
+					product_node* temp = compare1Head->getMultiNext();
+					while (temp)
+					{
+						product_node* insert = new product_node(bit_length);
+						insertTemp->setMultiNext(insert);
+						insert->setBinary(temp->getBinary());
+
+						insertTemp = insertTemp->getMultiNext();
+						temp = temp->getMultiNext();
+					}
+				}
+
+			}
+
+		}
+		compare1Head = compare1Head->getPlusNext();
+	}
+
+	compare1Head = head;
+	head = insertHead;
+	compare1Head->deletePlus();
+	delete compare1Head;
+
+	return;
+}
+
 void Product::PrintProduct(void)
 {
 	product_node* curTemp = getHead();
@@ -237,10 +431,10 @@ void Product::PrintProduct(void)
 		product_node* curMultiTemp = curTemp;
 		while (curMultiTemp != NULL)
 		{
-			cout << curMultiTemp->getBinary() << '|';
+			cout << curMultiTemp->getBinary() << " | ";
 			curMultiTemp = curMultiTemp->getMultiNext();
 		}
-		cout << ' ';
+		cout << " + ";
 		curTemp = curTemp->getPlusNext();
 	}
 	cout << endl;

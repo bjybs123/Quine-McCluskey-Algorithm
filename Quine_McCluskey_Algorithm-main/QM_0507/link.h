@@ -46,37 +46,13 @@ public:
 	void groupCompare(Node*, Node*, unsigned short);
 	void compareBinary(Node* compare1, Node* compare2, unsigned short bit_length);
 	void findEPI(Link* epi, Link* minhead, unsigned short bit_length);
-	void deleteNode(char* binaryIn, bool state) {
+	void deleteNode(char* binaryIn) {
 		Node* prevNode = nullptr;
 		Node* currNode = pHead;
-		while (currNode)
+		while (currNode && strcmp(currNode->getBinary(), binaryIn))
 		{
-			if (state == true)
-			{
-				if (isSame(currNode->getBinary(), binaryIn) == 0)
-				{
-					break;
-				}
-				else
-				{
-					prevNode = currNode;
-					currNode = currNode->getNext();
-				}
-			}
-			else
-			{
-				if (strcmp(currNode->getBinary(), binaryIn) == 0)
-				{
-					break;
-				}
-				else
-				{
-					prevNode = currNode;
-					currNode = currNode->getNext();
-				}
-			}
-
-
+			prevNode = currNode;
+			currNode = currNode->getNext();
 		}
 		if (currNode) {
 			if (prevNode) {
@@ -84,16 +60,8 @@ public:
 				delete currNode;
 			}
 			else {
-				if (pHead == currNode)
-				{
-					delete pHead;
-					pHead = NULL;
-				}
-				else
-				{
-					pHead = currNode->getNext();
-					delete currNode;
-				}
+				pHead = currNode->getNext();
+				delete currNode;
 			}
 		}
 	}
@@ -334,7 +302,6 @@ void Link::compareBinary(Node* compare1, Node* compare2, unsigned short bit_leng
 
 void Link::findEPI(Link* epi, Link* minhead, unsigned short bit_length)
 {
-	int includeNum;
 	Node* piNode = pHead;
 	Node* minNode = minhead->getHead();
 	while (minNode)
@@ -352,41 +319,36 @@ void Link::findEPI(Link* epi, Link* minhead, unsigned short bit_length)
 		}
 		if (minNode->getCheck() == 1)
 		{
-			minhead->deleteNode(EPI->getBinary(), 1);
+			minNode = minNode->getNext();
 			epi->addNode(bit_length, EPI->getBinary());
-			deleteNode(EPI->getBinary(), 0);
+			deleteNode(EPI->getBinary());
+			piNode = pHead;
+			continue;
 		}
-
 		piNode = pHead;
 		minNode = minNode->getNext();
 	}
 
-
-
-
-
-	/*  Print check
-	
-	cout << "\n\nminHead\n";
+	Node* epiNode = epi->getHead();
 	minNode = minhead->getHead();
 	while (minNode)
 	{
-
-		cout << "binary : " << minNode->getBinary() << "\n";
-		cout << "minnode check : " << minNode->getCheck() <<  "\n";
-		minNode = minNode->getNext();
+		//eliminate minterms
 	}
+	
 
-	cout << "\n\npiHead\n";
-	piNode = pHead;
-	while (piNode)
-	{
-		cout << "binary : " << piNode->getBinary() << "\n";
-		cout << "pinode check : " << piNode->getCheck() << "\n";
-		piNode = piNode->getNext();
-	}
-	*/
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -410,8 +372,8 @@ public:
 };
 
 
-Sums::Sums() { producthead = NULL; next = NULL; }
-Sums::~Sums() { delete producthead;  }
+Sums::Sums() { producthead = new Product; next = NULL; }
+Sums::~Sums() { delete producthead; }
 
 Product* Sums::getProduct()
 {
@@ -443,7 +405,7 @@ private:
 
 public:
 	Pos() { head = NULL; }
-
+	~Pos() {  };
 	Sums* getHead(void);
 	void setHead(Sums* headIn);
 	void addLinkToPos(Link*, Link*, unsigned short);
@@ -469,7 +431,7 @@ void Pos::addLinkToPos(Link* inputLink, Link* minLink, unsigned short bit_length
 	Node* minTemp = minLink->getHead();
 
 	Sums* curTemp = new Sums;
-	Sums* curhead = curTemp;
+	head = curTemp;
 
 	while (minTemp != NULL)
 	{
@@ -487,15 +449,53 @@ void Pos::addLinkToPos(Link* inputLink, Link* minLink, unsigned short bit_length
 		minTemp = minTemp->getNext();
 		if (count != 0)
 		{
-			curTemp = curTemp->getNext();
+			if (minTemp != NULL)
+			{
+				Sums* temp = new Sums;
+				curTemp->setNext(temp);
+				curTemp = temp;
+			}
 		}
 	}
-	setHead(curhead);
+
 
 	return;
 }
 void Pos::combinePos(unsigned short bit_length)
 {
+	Sums* curTemp = head;
+	Sums* nextTemp = curTemp->getNext();
+	Sums* inputTemp = new Sums;
+
+	if (curTemp == NULL || nextTemp == NULL)
+	{
+		return;
+	}
+
+	Product* inputProduct = inputTemp->getProduct();
+
+
+
+	inputProduct->distribute(curTemp->getProduct(), nextTemp->getProduct(), bit_length);			//여기서 호출하면 됨
+	inputTemp->setNext(head->getNext()->getNext());
+	head = inputTemp;
+
+
+	cout << "\ndistributed\n";
+	printPos();
+
+	inputProduct->DeleteSame(bit_length);
+
+	cout << "\ndeleted\n";
+	printPos();
+
+	curTemp->getProduct()->getHead()->deletePlus();
+	delete curTemp->getProduct();
+
+	nextTemp->getProduct()->getHead()->deletePlus();
+	delete nextTemp->getProduct();
+
+	combinePos(bit_length);
 
 	return;
 }
@@ -510,4 +510,7 @@ void Pos::printPos(void)
 	}
 	return;
 }
+
+
+
 
