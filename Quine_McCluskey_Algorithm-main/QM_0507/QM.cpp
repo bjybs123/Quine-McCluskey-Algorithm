@@ -18,17 +18,19 @@ int main()
 
 	allhead->Find(PI, bit_length);
 
-	cout << "PIs\n";
+	cout << "\nPIs\n";
 	PI->print();
-	cout << "Minterms\n";
+	cout << "\nMinterms\n";
 	minhead->print();
 
 	//PI->findEPI(epi, minhead, bit_length);
 
 	pm->addLinkToPos(PI, minhead, bit_length);
+	cout << "\nBefore Petrick Method\n";
 	pm->printPos();
 	pm->combinePos(bit_length);
-	cout << "\n";
+	cout << "\nPetrick Method\n";
+	pm->printPos();
 
 }
 

@@ -340,19 +340,6 @@ void Link::findEPI(Link* epi, Link* minhead, unsigned short bit_length)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 class Sums
 {
 private:
@@ -475,25 +462,20 @@ void Pos::combinePos(unsigned short bit_length)
 	Product* inputProduct = inputTemp->getProduct();
 
 
-
-	inputProduct->distribute(curTemp->getProduct(), nextTemp->getProduct(), bit_length);			//여기서 호출하면 됨
 	inputTemp->setNext(head->getNext()->getNext());
 	head = inputTemp;
 
-
-	cout << "\ndistributed\n";
-	printPos();
-
+	inputProduct->distribute(curTemp->getProduct(), nextTemp->getProduct(), bit_length);			//여기서 호출하면 됨
 	inputProduct->DeleteSame(bit_length);
 
-	cout << "\ndeleted\n";
-	printPos();
-
 	curTemp->getProduct()->getHead()->deletePlus();
-	delete curTemp->getProduct();
+	delete curTemp->getProduct()->getHead();
+	delete curTemp;
 
 	nextTemp->getProduct()->getHead()->deletePlus();
-	delete nextTemp->getProduct();
+	delete nextTemp->getProduct()->getHead();
+	delete nextTemp;
+
 
 	combinePos(bit_length);
 
@@ -510,7 +492,3 @@ void Pos::printPos(void)
 	}
 	return;
 }
-
-
-
-
