@@ -5,6 +5,7 @@ void FiletoData(Link*, Link*, unsigned short& bit_length);
 
 int main()
 {
+	Pos* pm = new Pos();
 	Link* epi = new Link();
 	Link* allhead = new Link();
 	Link* minhead = new Link();
@@ -17,29 +18,17 @@ int main()
 
 	allhead->Find(PI, bit_length);
 
+	cout << "PIs\n";
+	PI->print();
+	cout << "Minterms\n";
+	minhead->print();
+
+	//PI->findEPI(epi, minhead, bit_length);
+
+	pm->addLinkToPos(PI, minhead, bit_length);
+	pm->printPos();
+	pm->combinePos(bit_length);
 	cout << "\n";
-	PI->print();
-
-
-	cout << "befor epi : \n";
-	minhead->print();
-	PI->findEPI(epi, minhead, bit_length);
-
-
-	cout << "\nafter get epis\n";
-	minhead->print();
-
-
-	cout << "pis\n";
-
-	PI->print();
-
-	cout << "\nepis\n";
-
-	epi->print();
-
-
-
 
 }
 

@@ -105,28 +105,43 @@ void product_node::insert_multi(char* binaryIn, unsigned short bit_length)
 
 product_node* product_node::multiply(product_node* leftNode, product_node* rightNode, unsigned short bit_length)
 {
+	bool sameState = false;
+	product_node* tempLeft = leftNode;
 	product_node* newNode = new product_node(bit_length);
 	newNode->setBinary(leftNode->getBinary());			//비어있는 노드이기 때문에 처음 값을 임의로 왼쪽 product list에 1번째 곱의 항으로 초기화 해준다.
-
-	while (leftNode->getMultiNext())
+	leftNode = leftNode->getMultiNext();
+	product_node* originTemp = newNode;
+	while (leftNode)
 	{
 		product_node* newTemp = new product_node(bit_length);
-		setBinary(leftNode->getBinary());
+		newTemp->setBinary(leftNode->getBinary());
 		newNode->setMultiNext(newTemp);
-
 		leftNode = leftNode->getMultiNext();
+		newNode = newNode->getMultiNext();
 	}
-
-	while (rightNode->getMultiNext())
+	newNode = originTemp;
+	while (rightNode)
 	{
+		sameState = false;
 		product_node* newTemp = new product_node(bit_length);
-		setBinary(rightNode->getBinary());
+		newTemp->setBinary(rightNode->getBinary());
+		while (newNode->getMultiNext())
+		{
+			if (strcmp(newNode->getBinary(), rightNode->getBinary()) == 0)
+				sameState = true;
+				newNode = newNode->getMultiNext();
+		}
+		if (sameState == true)
+		{
+			rightNode = rightNode->getMultiNext();
+			continue;
+		}
 		newNode->setMultiNext(newTemp);
 
 		rightNode = rightNode->getMultiNext();
 	}
 
-	return newNode;
+	return originTemp;
 }
 
 
@@ -144,6 +159,7 @@ public:
 	void distribute(Product*, Product*, unsigned short);
 	void insert_plus(char*, unsigned short);
 	void insert_multiplied_node(product_node*);
+	void PrintProduct(void);
 };
 
 
@@ -184,6 +200,7 @@ void Product::insert_plus(char* binaryIn, unsigned short bit_length)
 
 void Product::distribute(Product* cmp1, Product* cmp2, unsigned short bit_length)
 {
+	Product* origin = this;
 	product_node* moveNode1 = cmp1->getHead();
 	product_node* moveNode2 = cmp2->getHead();
 	
@@ -195,22 +212,24 @@ void Product::distribute(Product* cmp1, Product* cmp2, unsigned short bit_length
 	{
 		cout << "right side product is empty\n";
 	}
+
 	while (moveNode1)	//좌측 product list 첫번째 항을 기준으로 분배 시작
 	{
-
 		while (moveNode2)
 		{
 			product_node* multipliedNode = nullptr;
-			multipliedNode = multipliedNode->multiply(cmp1->getHead(), cmp2->getHead(), bit_length);
-			
-			this->insert_multiplied_node(multipliedNode);
 
-			moveNode1 = moveNode1->getPlusNext();	//다음 더하기 항으로 이동
+			multipliedNode = multipliedNode->multiply(moveNode1, moveNode2, bit_length);
+			
+			insert_multiplied_node(multipliedNode);
+
+			moveNode2 = moveNode2->getPlusNext();	//다음 더하기 항으로 이동
 		}
+		moveNode2 = cmp2->getHead();
 		moveNode1 = moveNode1->getPlusNext();	//다음 더하기 항으로 이동
 	}
 }
-void Product::insert_multiplied_node(product_node* nodeIn)
+void Product::insert_multiplied_node(product_node* nodeIn)				//have problem
 {
 	product_node* movingNode = head;
 	if (head == nullptr)
@@ -225,4 +244,24 @@ void Product::insert_multiplied_node(product_node* nodeIn)
 		}
 		movingNode->setPlusNext(nodeIn);
 	}
+}
+
+void Product::PrintProduct(void)
+{
+	product_node* curTemp = getHead();
+
+	while (curTemp != NULL)
+	{
+		product_node* curMultiTemp = curTemp;
+		while (curMultiTemp != NULL)
+		{
+			cout << curMultiTemp->getBinary() << " | ";
+			curMultiTemp = curMultiTemp->getMultiNext();
+		}
+		cout << " + ";
+		curTemp = curTemp->getPlusNext();
+	}
+	cout << endl;
+
+	return;
 }
