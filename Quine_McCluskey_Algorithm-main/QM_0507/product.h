@@ -52,6 +52,7 @@ public:
 	product_node* multiply(product_node*, product_node*, unsigned short);
 	void deleteMulti(void);
 	void deletePlus(void);
+	void printMulti(void);
 };
 
 
@@ -173,6 +174,19 @@ void product_node::deletePlus(void)
 		delete plusNext;
 	}
 	
+	return;
+}
+
+void product_node::printMulti(void)
+{
+	cout << getBinary()<< endl;
+	product_node* temp = getMultiNext();
+
+	while (temp)
+	{
+		cout << temp->getBinary() << endl;
+		temp = temp->getMultiNext();
+	}
 	return;
 }
 

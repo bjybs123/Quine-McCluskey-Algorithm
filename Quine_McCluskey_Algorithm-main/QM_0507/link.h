@@ -45,7 +45,6 @@ public:
 	void Find(Link*, unsigned short);
 	void groupCompare(Node*, Node*, unsigned short);
 	void compareBinary(Node* compare1, Node* compare2, unsigned short bit_length);
-	void findEPI(Link* epi, Link* minhead, unsigned short bit_length);
 	void deleteNode(char* binaryIn) {
 		Node* prevNode = nullptr;
 		Node* currNode = pHead;
@@ -300,45 +299,6 @@ void Link::compareBinary(Node* compare1, Node* compare2, unsigned short bit_leng
 	return;
 }
 
-void Link::findEPI(Link* epi, Link* minhead, unsigned short bit_length)
-{
-	Node* piNode = pHead;
-	Node* minNode = minhead->getHead();
-	while (minNode)
-	{
-		Node* EPI = nullptr;
-		while (piNode)
-		{
-			if (isSame(minNode->getBinary(), piNode->getBinary()) == true)
-			{
-				piNode->checkIncrease();
-				minNode->checkIncrease();
-				EPI = piNode;
-			}
-			piNode = piNode->getNext();
-		}
-		if (minNode->getCheck() == 1)
-		{
-			minNode = minNode->getNext();
-			epi->addNode(bit_length, EPI->getBinary());
-			deleteNode(EPI->getBinary());
-			piNode = pHead;
-			continue;
-		}
-		piNode = pHead;
-		minNode = minNode->getNext();
-	}
-
-	Node* epiNode = epi->getHead();
-	minNode = minhead->getHead();
-	while (minNode)
-	{
-		//eliminate minterms
-	}
-	
-
-}
-
 
 class Sums
 {
@@ -398,6 +358,7 @@ public:
 	void addLinkToPos(Link*, Link*, unsigned short);
 	void combinePos(unsigned short);
 	void printPos(void);
+	product_node* FindMinSums(int&, unsigned short);
 
 };
 
@@ -460,8 +421,6 @@ void Pos::combinePos(unsigned short bit_length)
 	}
 
 	Product* inputProduct = inputTemp->getProduct();
-
-
 	inputTemp->setNext(head->getNext()->getNext());
 	head = inputTemp;
 
@@ -491,4 +450,74 @@ void Pos::printPos(void)
 		curTemp = curTemp->getNext();
 	}
 	return;
+}
+
+
+product_node* Pos::FindMinSums(int& minTrans, unsigned short bit_length)
+{
+	product_node* minHead = NULL;
+	product_node* curHead = head->getProduct()->getHead();
+	
+	int* invertor = new int[bit_length-1];
+
+	minTrans = -1;
+
+	while (curHead)
+	{
+		for (int i = 0; i < bit_length - 1; i++)
+		{
+			invertor[i] = 0;
+		}
+		product_node* temp = curHead;
+		int compareTrans = 0;
+		int orGate = 0;
+
+		while (temp)
+		{
+			int andGate = 0;
+			orGate++;
+	
+			for (int i = 0; i < bit_length-1; i++)
+			{
+				if (temp->getBinary()[i] == 0)
+				{
+					invertor[i] = 1;
+				}
+
+				if (temp->getBinary()[i] != '-')
+				{
+					andGate++;
+				}
+			}
+
+			if ((int)bit_length - andGate > 1)
+			{
+				compareTrans += (((int)bit_length - andGate) * 2) + 2;
+			}
+			temp = temp->getMultiNext();
+		}
+
+		if (orGate > 1)
+		{
+			compareTrans += orGate * 2 + 2;
+		}
+
+		for (int i = 0; i < bit_length - 1; i++)
+		{
+			if (invertor[i] == 1)
+			{
+				compareTrans += 2;
+			}
+		}
+
+		if (minTrans == -1 || minTrans > compareTrans)
+		{
+			minTrans = compareTrans;
+			minHead = curHead;
+		}
+
+		curHead = curHead->getPlusNext();
+	}
+
+	return minHead;
 }

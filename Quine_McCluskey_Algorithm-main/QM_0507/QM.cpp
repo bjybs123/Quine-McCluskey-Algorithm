@@ -6,10 +6,10 @@ void FiletoData(Link*, Link*, unsigned short& bit_length);
 int main()
 {
 	Pos* pm = new Pos();
-	Link* epi = new Link();
 	Link* allhead = new Link();
 	Link* minhead = new Link();
 	Link* PI = new Link();
+	int trans = -1;
 	unsigned short bit_length = 0;
 
 	FiletoData(allhead, minhead, bit_length);
@@ -23,7 +23,6 @@ int main()
 	cout << "\nMinterms\n";
 	minhead->print();
 
-	//PI->findEPI(epi, minhead, bit_length);
 
 	pm->addLinkToPos(PI, minhead, bit_length);
 	cout << "\nBefore Petrick Method\n";
@@ -31,6 +30,15 @@ int main()
 	pm->combinePos(bit_length);
 	cout << "\nPetrick Method\n";
 	pm->printPos();
+
+	cout << "\nMin Transistor combination\n";
+	pm->FindMinSums(trans, bit_length)->printMulti();
+	cout << "Trans : " << trans << endl;
+
+	pm->getHead()->getProduct()->getHead()->deletePlus();
+	delete pm->getHead()->getProduct()->getHead();
+	delete pm->getHead();
+	delete pm;
 
 }
 
