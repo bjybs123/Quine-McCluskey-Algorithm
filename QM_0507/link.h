@@ -24,10 +24,7 @@ public:
 	char* getBinary();
 	void setBinary(char*);
 	unsigned short getOneNum();
-	void checkIncrease()
-	{
-		check++;
-	}
+	void checkIncrease();
 	
 };
 
@@ -80,7 +77,7 @@ Node::Node()
 }
 Node::~Node()
 {
-
+	delete binary;
 }
 Node::Node(unsigned short length)
 {
@@ -125,7 +122,10 @@ unsigned short Node::getOneNum()
 {
 	return one_num;
 }
-
+void Node::checkIncrease()
+{
+	check++;
+}
 
 //Link's method functions
 
@@ -135,11 +135,15 @@ Link::Link()
 }
 Link::~Link()
 {
-	Node* tempNode = pHead;
-	while (pHead)
+	Node* moving = pHead;
+	while (moving)
 	{
 		pHead = pHead->getNext();
+		delete moving;
+		moving = pHead;
 	}
+	pHead = nullptr;
+	return;
 }
 Node* Link::getHead()
 {
@@ -337,41 +341,7 @@ void Link::findEPI(Link* epi, Link* minhead, unsigned short bit_length)
 	}
 	
 
-	/*  Print check
-	
-	cout << "\n\nminHead\n";
-	minNode = minhead->getHead();
-	while (minNode)
-	{
-
-		cout << "binary : " << minNode->getBinary() << "\n";
-		cout << "minnode check : " << minNode->getCheck() <<  "\n";
-		minNode = minNode->getNext();
-	}
-
-	cout << "\n\npiHead\n";
-	piNode = pHead;
-	while (piNode)
-	{
-		cout << "binary : " << piNode->getBinary() << "\n";
-		cout << "pinode check : " << piNode->getCheck() << "\n";
-		piNode = piNode->getNext();
-	}
-	*/
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class Sums
@@ -426,12 +396,13 @@ private:
 
 public:
 	Pos() { head = NULL; }
-
+	~Pos() {  };
 	Sums* getHead(void);
 	void setHead(Sums* headIn);
 	void addLinkToPos(Link*, Link*, unsigned short);
 	void combinePos(unsigned short);
 	void printPos(void);
+	void fileOut();
 
 };
 
@@ -470,11 +441,13 @@ void Pos::addLinkToPos(Link* inputLink, Link* minLink, unsigned short bit_length
 		minTemp = minTemp->getNext();
 		if (count != 0)
 		{
-			Sums* temp = new Sums;
-			curTemp->setNext(temp);
-			curTemp = temp;
+			if (minTemp != NULL)
+			{
+				Sums* temp = new Sums;
+				curTemp->setNext(temp);
+				curTemp = temp;
+			}
 		}
-
 	}
 
 
@@ -491,16 +464,23 @@ void Pos::combinePos(unsigned short bit_length)
 		return;
 	}
 
-	Product* curProduct = curTemp->getProduct();
-	Product* nextProduct = nextTemp->getProduct();
 	Product* inputProduct = inputTemp->getProduct();
 
-	inputProduct->distribute(curProduct, nextProduct, bit_length);			//여기서 호출하면 됨
-	
-	inputTemp->setNext(head->getNext()->getNext());
 
+	inputTemp->setNext(head->getNext()->getNext());
 	head = inputTemp;
-	printPos();
+
+	inputProduct->distribute(curTemp->getProduct(), nextTemp->getProduct(), bit_length);			//여기서 호출하면 됨
+	inputProduct->DeleteSame(bit_length);
+
+	curTemp->getProduct()->getHead()->deletePlus();
+	delete curTemp->getProduct()->getHead();
+	delete curTemp;
+
+	nextTemp->getProduct()->getHead()->deletePlus();
+	delete nextTemp->getProduct()->getHead();
+	delete nextTemp;
+
 
 	combinePos(bit_length);
 
@@ -517,7 +497,19 @@ void Pos::printPos(void)
 	}
 	return;
 }
+void Pos::fileOut()
+{
+	ofstream writeFile;            //쓸 목적의 파일 선언
+	writeFile.open("result.txt");    //파일 열기
+	
 
-
-
-
+	Sums* curTemp = getHead();
+	while (curTemp != NULL)
+	{
+		curTemp->getProduct()->PtoFile();
+		curTemp = curTemp->getNext();
+	}
+	
+	writeFile.close();
+	return;
+}
