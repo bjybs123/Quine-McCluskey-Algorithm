@@ -1,4 +1,4 @@
-#include <fstream>
+
 #include "link.h"
 
 void FiletoData(Link*, Link*, unsigned short& bit_length);
@@ -9,8 +9,9 @@ int main()
 	Link* allhead = new Link();
 	Link* minhead = new Link();
 	Link* PI = new Link();
-	int trans = -1;
 	unsigned short bit_length = 0;
+	int trans = -1;
+
 
 	FiletoData(allhead, minhead, bit_length);
 
@@ -30,11 +31,12 @@ int main()
 	pm->combinePos(bit_length);
 	cout << "\nPetrick Method\n";
 	pm->printPos();
+	pm->FindMinSums(trans, bit_length)->PtoFile(trans, bit_length);
+	
 
-	cout << "\nMin Transistor combination\n";
-	pm->FindMinSums(trans, bit_length)->printMulti();
-	cout << "Trans : " << trans << endl;
-
+	delete allhead;
+	delete minhead;
+	delete PI;
 	pm->getHead()->getProduct()->getHead()->deletePlus();
 	delete pm->getHead()->getProduct()->getHead();
 	delete pm->getHead();
@@ -65,6 +67,8 @@ void FiletoData(Link* allhead, Link* minhead, unsigned short& bit_length)
 	{
 		fin >> MorD;
 		fin >> binary;
+		if (strcmp(binary, "") == 0)
+			break;
 		if (MorD == 'm' || MorD == 'M')
 		{
 			allhead->addNode(bit_length, binary);

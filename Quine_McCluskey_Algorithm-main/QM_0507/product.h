@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 void my_strcpy(char* str1, char* str2)
@@ -53,6 +54,7 @@ public:
 	void deleteMulti(void);
 	void deletePlus(void);
 	void printMulti(void);
+	void PtoFile(int, unsigned short);
 };
 
 
@@ -177,9 +179,10 @@ void product_node::deletePlus(void)
 	return;
 }
 
+
 void product_node::printMulti(void)
 {
-	cout << getBinary()<< endl;
+	cout << getBinary() << endl;
 	product_node* temp = getMultiNext();
 
 	while (temp)
@@ -190,6 +193,28 @@ void product_node::printMulti(void)
 	return;
 }
 
+void product_node::PtoFile(int trans, unsigned short bit_length)
+{
+	ofstream fout;
+
+	fout.open("result.txt");
+	product_node* curTemp = multiNext;
+
+	fout.write(binary, bit_length);
+	fout << endl;
+
+	while (curTemp != NULL)
+	{
+		fout.write(curTemp->getBinary(), bit_length);
+		fout << "\n";
+		curTemp = curTemp->getMultiNext();
+	}
+
+	fout << "\nCost (# of transistors): ";
+	fout <<  trans << endl;
+
+	return;
+}
 
 
 class Product
@@ -208,6 +233,7 @@ public:
 	int isSameProduct(product_node*, product_node*);
 	void DeleteSame(unsigned short);
 	void PrintProduct(void);
+	void PtoFile(void);
 };
 
 
@@ -431,7 +457,6 @@ void Product::DeleteSame(unsigned short bit_length)
 	compare1Head = head;
 	head = insertHead;
 	compare1Head->deletePlus();
-	delete compare1Head;
 
 	return;
 }
