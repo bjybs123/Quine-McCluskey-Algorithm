@@ -5,57 +5,64 @@ void FiletoData(Link*, Link*, unsigned short& bit_length);
 
 int main()
 {
-	Pos* pm = new Pos();
-	Link* allhead = new Link();
-	Link* minhead = new Link();
-	Link* PI = new Link();
+
+	Link* allhead = new Link();		//dont care항과 minterm항을 모두 연결하는 링크드 리스트 생성
+	Link* minhead = new Link();		//minterm항을 연결하는 링크드 리스트 생성
+	Link* PI = new Link();			//prime implicant를 연결 할 링크드 리스트 생성
 	unsigned short bit_length = 0;
+	int trans = -1;
 
-	FiletoData(allhead, minhead, bit_length);
+	FiletoData(allhead, minhead, bit_length);		//input.txt 입력
+		
+	//allhead->print();
 
-	allhead->print();
+	allhead->Find(PI, bit_length);			//prime implicant를 찾는 함수 호출
 
-	allhead->Find(PI, bit_length);
+	delete allhead;
 
-	cout << "\nPIs\n";
-	PI->print();
-	cout << "\nMinterms\n";
-	minhead->print();
+	Pos* pm = new Pos();
 
+	pm->addLinkToPos(PI, minhead, bit_length);		//Pi를 product of sums로 만드는 함수 
 
-	pm->addLinkToPos(PI, minhead, bit_length);
+	delete minhead;
+	delete PI;
+	cout << "Please check result.txt\nThank you.\n";
 	cout << "\nBefore Petrick Method\n";
 	pm->printPos();
+	cout << "combning...\n";
 	pm->combinePos(bit_length);
 	cout << "\nPetrick Method\n";
 	pm->printPos();
-	pm->fileOut();
+	pm->FindMinSums(trans, bit_length)->PtoFile(trans, bit_length);			//분배가 끝난 논리식 각각이 minterm을 포함하는 논리식이기때문에 transister가 적게 쓰인 논리식을 고르는 함수
 
-	delete allhead;
-	delete allhead;
-	delete minhead;
-	delete PI;
 
+	pm->getHead()->getProduct()->getHead()->deletePlus();
+	delete pm->getHead()->getProduct()->getHead();
+	delete pm->getHead();
+	delete pm;
+
+
+	return 0;
 }
 
 
 void FiletoData(Link* allhead, Link* minhead, unsigned short& bit_length)
 {
-	ifstream fin;
+	ifstream fin;	
 
-	fin.open("input.txt");
+	fin.open("input.txt");	
 	
-	if (fin.fail())
+	if (fin.fail())		//파일열기를 실패했을 경우
 	{
-		cerr << "error\n";
-		exit(100);
+		cerr << "file open error\n";			//에러 메세지 출력
+		exit(100);								//프로그램 종료
 	}
 
-	char* binary;
+	char* binary;			
 	char MorD;
 	fin >> bit_length;
 	++bit_length;
-	binary = new char[bit_length];
+	binary = new char[bit_length];			//binary를 저장할 문자열 입력된 bit length만큼 동적할당
 
 	while (!fin.eof())
 	{
@@ -65,18 +72,18 @@ void FiletoData(Link* allhead, Link* minhead, unsigned short& bit_length)
 			break;
 		if (MorD == 'm' || MorD == 'M')
 		{
-			allhead->addNode(bit_length, binary);
-			minhead->addNode(bit_length, binary);
+			allhead->addNode(bit_length, binary);			//만약 minterm일 경우 allhead에 연결
+			minhead->addNode(bit_length, binary);			//만약 minterm일 경우 minhead에 연결
 		}
 		else if (MorD == 'd'|| MorD == 'D')
 		{
-			allhead->addNode(bit_length, binary);
+			allhead->addNode(bit_length, binary);			//만약 dont care일 경우 allhead에 연결
 		}
 	}
 
 	delete[] binary;
 
-	fin.close();
+	fin.close();											//파일 종료
 
 	return;
 }

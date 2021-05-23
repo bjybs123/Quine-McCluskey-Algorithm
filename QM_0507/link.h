@@ -25,7 +25,6 @@ public:
 	void setBinary(char*);
 	unsigned short getOneNum();
 	void checkIncrease();
-	
 };
 
 class Link
@@ -42,26 +41,7 @@ public:
 	void Find(Link*, unsigned short);
 	void groupCompare(Node*, Node*, unsigned short);
 	void compareBinary(Node* compare1, Node* compare2, unsigned short bit_length);
-	void findEPI(Link* epi, Link* minhead, unsigned short bit_length);
-	void deleteNode(char* binaryIn) {
-		Node* prevNode = nullptr;
-		Node* currNode = pHead;
-		while (currNode && strcmp(currNode->getBinary(), binaryIn))
-		{
-			prevNode = currNode;
-			currNode = currNode->getNext();
-		}
-		if (currNode) {
-			if (prevNode) {
-				prevNode->setNext(currNode->getNext());
-				delete currNode;
-			}
-			else {
-				pHead = currNode->getNext();
-				delete currNode;
-			}
-		}
-	}
+	void deleteNode(char* binaryIn);
 };
 
 
@@ -128,7 +108,25 @@ void Node::checkIncrease()
 }
 
 //Link's method functions
-
+void Link::deleteNode(char* binaryIn) {
+	Node* prevNode = nullptr;
+	Node* currNode = pHead;
+	while (currNode && strcmp(currNode->getBinary(), binaryIn))
+	{
+		prevNode = currNode;
+		currNode = currNode->getNext();
+	}
+	if (currNode) {
+		if (prevNode) {
+			prevNode->setNext(currNode->getNext());
+			delete currNode;
+		}
+		else {
+			pHead = currNode->getNext();
+			delete currNode;
+		}
+	}
+}
 Link::Link()
 {
 	pHead = nullptr;
@@ -158,41 +156,44 @@ void Link::addNode(unsigned short bit_length, char* input_binary)
 	Node* newNode = new Node(bit_length);
 	newNode->setBinary(input_binary);
 
-	if (pHead == nullptr)
+	if (pHead == nullptr)		//노드가 연결이 안되어있으면 초기 노드 설정
 	{
 		pHead = newNode;
 	}
-	else
+	else						
 	{
 		Node* curNode = pHead;
 
 		while (curNode)
 		{
-			if (strcmp(curNode->getBinary(), newNode->getBinary()) == 0)
-				return;
-
-			if (curNode == pHead)
+			if (strcmp(curNode->getBinary(), newNode->getBinary()) == 0)			//만약 현재 노드가 입력된 binary와 같다면 현재노드 할당 해제
 			{
-				if (curNode->getOneNum() > newNode->getOneNum())
+				delete newNode;
+				return;
+			}
+
+			if (curNode == pHead)						//첫번쨰 노드외에 다른 노드가 존재하지 않을 경우
+			{
+				if (curNode->getOneNum() > newNode->getOneNum())			//현재 노드가 새로운 노드의 1의 개수보다 많을 경우 앞에 삽입
 				{
-					newNode->setNext(curNode);
-					pHead = newNode;
+					newNode->setNext(curNode);		//다음 노드를 현재 노드로 연결해준다
+					pHead = newNode;				//head를 새로운 노드를 가르킨다
 					return;
 				}
 			}
-			if (curNode->getNext() == nullptr)
-			{
-				curNode->setNext(newNode);
-				newNode->setNext(nullptr);
+			if (curNode->getNext() == nullptr)		//마지막 노드일 경우
+			{	
+				curNode->setNext(newNode);			//현재 ㄴ드의 다음을 새로운 노드로 가르킨다
+				newNode->setNext(nullptr);			//새로운 노드의 다음을 nullptr로 가르킨다. 
 				return;
 			}
-			if (newNode->getOneNum() < curNode->getNext()->getOneNum())
+			if (newNode->getOneNum() < curNode->getNext()->getOneNum())//현재 노드가 새로운 노드의 1의 개수보다 많을 경우 앞에 삽입
 			{
-				newNode->setNext(curNode->getNext());
-				curNode->setNext(newNode);
+				newNode->setNext(curNode->getNext());	//새로운 노드의 다음은 현재 노드로 가르킨다
+				curNode->setNext(newNode);				
 				return;
 			}
-			curNode = curNode->getNext();
+			curNode = curNode->getNext();				//다음 노드 이동
 		}
 
 	}
@@ -218,14 +219,14 @@ void Link::Find(Link* PI, unsigned short bit_length)
 
 	while (postMark)
 	{
-		if ((postMark->getOneNum() - preMark->getOneNum()) == 1)
+		if ((postMark->getOneNum() - preMark->getOneNum()) == 1)		//연결리스트의 노드가 binary의 1의 개수의 차가 1이면
 		{
-			compared.groupCompare(preMark, postMark, bit_length);
+			compared.groupCompare(preMark, postMark, bit_length);		//해당 위치를 함수에 전달하여 binary의 1의 개수가 1만큼 다른 그룹들을 비교
 		}
 
-		if ((postMark->getOneNum() - preMark->getOneNum()) != 0)
+		if ((postMark->getOneNum() - preMark->getOneNum()) != 0)		//만약에 처음 만나는 binary의 개수가 다른 노드의 차가 1이 아닌경우
 		{
-			while (preMark != postMark)
+			while (preMark != postMark)				//그룹을 처음부터 끝까지 PI에 넣어준다 
 			{
 				if (preMark->getCheck() == false)
 				{
@@ -238,7 +239,7 @@ void Link::Find(Link* PI, unsigned short bit_length)
 		postMark = postMark->getNext();
 	}
 
-	while (preMark != NULL)
+	while (preMark != NULL)		//만약에 그룹에서 축소가 안된 항들을 prime implicant 링크드 리스트에 저장
 	{
 		if (preMark->getCheck() == false)
 		{
@@ -250,10 +251,10 @@ void Link::Find(Link* PI, unsigned short bit_length)
 
 	if (compared.getHead() == NULL)
 	{
-		return;
+		return;					//마지막 노드에 도달 할 경우 함수 종료
 	}
 
-	compared.Find(PI, bit_length);
+	compared.Find(PI, bit_length);		//새로운 컬럼을 다시 검사
 	return;
 }
 void Link::groupCompare(Node* preNode, Node* postNode, unsigned short bit_length)
@@ -261,15 +262,15 @@ void Link::groupCompare(Node* preNode, Node* postNode, unsigned short bit_length
 	Node* tempPre = preNode;
 	Node* tempPost = postNode;
 
-	while (preNode->getOneNum() == tempPre->getOneNum())
+	while (preNode->getOneNum() == tempPre->getOneNum())		//앞에있는 그룹이 같은 binary개수 노드까지만 반복하게 한다
 	{
-		while (tempPost != NULL && postNode->getOneNum() == tempPost->getOneNum())
+		while (tempPost != NULL && postNode->getOneNum() == tempPost->getOneNum())		//뒤에있는 그룹또한 같은 binary개수 노드만 반복하게 한다
 		{
-			compareBinary(tempPre, tempPost, bit_length);
-			tempPost = tempPost->getNext();
+			compareBinary(tempPre, tempPost, bit_length);		//두 다른 그룹에 있는 binary들을 비교하여 축수가 가능하지 체크하고 축소한다
+			tempPost = tempPost->getNext();		//뒷 그룹 다음 노드로 이동
 		}
-		tempPre = tempPre->getNext();
-		tempPost = postNode;
+		tempPre = tempPre->getNext();		//앞에 그룹 다음 노드로 이동
+		tempPost = postNode;		//뒷 그룹 처음으로 다시 이동.
 	}
 
 }
@@ -277,71 +278,34 @@ void Link::compareBinary(Node* compare1, Node* compare2, unsigned short bit_leng
 {
 	int dif = 0;
 	char* result = new char[bit_length];
-	for (int i = 0; i < bit_length; ++i)
+	for (int i = 0; i < bit_length; i++)
 	{
-		if (compare1->getBinary()[i] != compare2->getBinary()[i])
+		if (compare1->getBinary()[i] != compare2->getBinary()[i])		//만약 둘의 번째 비트의 원소가 다르다면
 		{
-			if (compare1->getBinary()[i] == '-' || compare2->getBinary()[i] == '-')
+			if (compare1->getBinary()[i] == '-' || compare2->getBinary()[i] == '-')		//둘중 하나의 i번쨰 노드가 - 라면 함수를 종료한다 
 			{
 				delete[] result;
 				return;
 			}
-			result[i] = '-';
+			result[i] = '-';			//해당 위치를 -로 바꾼고 dif 둘의 차이를 나타내는 변수를 증가시킨다.
 			dif++;
 		}
 		else
 		{
-			result[i] = compare1->getBinary()[i];
+			result[i] = compare1->getBinary()[i];		//i번째 위치가 같다면 result에 저장한다
 		}
 	}
-	if (dif == 1)
+	if (dif == 1)				//만약 둘의 차이가 1이라면
 	{
-		addNode(bit_length, result);
-		compare1->setCheck(true);
-		compare2->setCheck(true);
+		addNode(bit_length, result); //현재 링크드리스트에 추가한다.
+
+		compare1->setCheck(true);	//각 binary가 축소되었음을 체크한다
+		compare2->setCheck(true);	
 	}
 	delete[] result;
 	return;
 }
 
-void Link::findEPI(Link* epi, Link* minhead, unsigned short bit_length)
-{
-	Node* piNode = pHead;
-	Node* minNode = minhead->getHead();
-	while (minNode)
-	{
-		Node* EPI = nullptr;
-		while (piNode)
-		{
-			if (isSame(minNode->getBinary(), piNode->getBinary()) == true)
-			{
-				piNode->checkIncrease();
-				minNode->checkIncrease();
-				EPI = piNode;
-			}
-			piNode = piNode->getNext();
-		}
-		if (minNode->getCheck() == 1)
-		{
-			minNode = minNode->getNext();
-			epi->addNode(bit_length, EPI->getBinary());
-			deleteNode(EPI->getBinary());
-			piNode = pHead;
-			continue;
-		}
-		piNode = pHead;
-		minNode = minNode->getNext();
-	}
-
-	Node* epiNode = epi->getHead();
-	minNode = minhead->getHead();
-	while (minNode)
-	{
-		//eliminate minterms
-	}
-	
-
-}
 
 
 class Sums
@@ -358,7 +322,6 @@ public:
 	void setProduct(Product*);
 	Sums* getNext();
 	void setNext(Sums*);
-	bool compareSum(int i1, unsigned short);
 
 };
 
@@ -383,10 +346,6 @@ void Sums::setNext(Sums* inputnext)
 {
 	next = inputnext;
 }
-bool Sums::compareSum(int i1, unsigned short bit_length)
-{
-	return 1;
-}
 
 
 class Pos
@@ -402,8 +361,7 @@ public:
 	void addLinkToPos(Link*, Link*, unsigned short);
 	void combinePos(unsigned short);
 	void printPos(void);
-	void fileOut();
-
+	product_node* FindMinSums(int&, unsigned short);
 };
 
 
@@ -425,12 +383,12 @@ void Pos::addLinkToPos(Link* inputLink, Link* minLink, unsigned short bit_length
 	Sums* curTemp = new Sums;
 	head = curTemp;
 
-	while (minTemp != NULL)
+	while (minTemp != NULL)	//minterm을 모아둔 리스트와 pi를 모아둔 리스트를 검사
 	{
 		int count = 0;
 		while (piTemp != NULL)
 		{
-			if (isSame(piTemp->getBinary(), minTemp->getBinary()))
+			if (isSame(piTemp->getBinary(), minTemp->getBinary()))		//만약에 한 minterm에서 해당 minterm을 포함하는 pi들을 pos형식으로 2차원 리스트에 더하기로 연결
 			{
 				curTemp->getProduct()->insert_plus(piTemp->getBinary(), bit_length);
 				count++;
@@ -439,50 +397,57 @@ void Pos::addLinkToPos(Link* inputLink, Link* minLink, unsigned short bit_length
 		}
 		piTemp = inputLink->getHead();
 		minTemp = minTemp->getNext();
-		if (count != 0)
+		if (count != 0)		//만약에 minterm을 포함하는 pi가 존재하면
 		{
 			if (minTemp != NULL)
 			{
-				Sums* temp = new Sums;
+				Sums* temp = new Sums;		//petrick's method에서 곱으로 연결해주기 위해 새로운 sums노드 연결
 				curTemp->setNext(temp);
 				curTemp = temp;
 			}
 		}
 	}
-
-
 	return;
 }
-void Pos::combinePos(unsigned short bit_length)
+void Pos::combinePos(unsigned short bit_length)		//POS로 정리된 해당 특정 minterm을 포함하는 pi들의 합의 곱을 분배 법칙으로 푸는 함수
 {
-	Sums* curTemp = head;
-	Sums* nextTemp = curTemp->getNext();
-	Sums* inputTemp = new Sums;
+	Sums* curTemp = head;	//첫 노드를 가르키고 
+	Sums* nextTemp = curTemp->getNext();//그 다음 곱을 가르킨다
 
-	if (curTemp == NULL || nextTemp == NULL)
+	if (curTemp == NULL || nextTemp == NULL)	//더 이상 분배 할 곱이 없다면 함수 종료
 	{
 		return;
 	}
 
+	Sums* inputTemp = new Sums;		//1번째 항과 2번째 항을 분배법칙을 하고 나온 논리식과 3번째 논리식을 비교하기 위해 
 	Product* inputProduct = inputTemp->getProduct();
+	inputTemp->setNext(head->getNext()->getNext());		//3번쨰 항을 할당 다음으로 항당 해준다
+	head = inputTemp;		
 
 
-	inputTemp->setNext(head->getNext()->getNext());
-	head = inputTemp;
 
-	inputProduct->distribute(curTemp->getProduct(), nextTemp->getProduct(), bit_length);			//여기서 호출하면 됨
+	inputProduct->distribute(curTemp->getProduct(), nextTemp->getProduct(), bit_length);			//두 더하기 항을 분배법칙을 이용해 전개
+	
+	cout << "after multiplying";
+	cout << "\n--> ";
+	inputProduct->PrintProduct();
+
 	inputProduct->DeleteSame(bit_length);
+	cout << "after deleting same terms";
+	cout << "\n--> ";
+	inputProduct->PrintProduct();
 
-	curTemp->getProduct()->getHead()->deletePlus();
-	delete curTemp->getProduct()->getHead();
-	delete curTemp;
+	cout << "\n";
 
-	nextTemp->getProduct()->getHead()->deletePlus();
-	delete nextTemp->getProduct()->getHead();
-	delete nextTemp;
+	curTemp->getProduct()->getHead()->deletePlus();			//노드에 연결된 더하기 항들 할당 해제
+	delete curTemp->getProduct()->getHead();				//sums노드를 할당해제
+	delete curTemp;											//curTemp 할당해제
 
+	nextTemp->getProduct()->getHead()->deletePlus();		//노드에 연결된 더하기 항들 할당 해제
+	delete nextTemp->getProduct()->getHead();				//sums노드를 할당해제
+	delete nextTemp;										//curTemp 할당해제
 
-	combinePos(bit_length);
+	combinePos(bit_length);									//재귀적 용법으로 3번째 부터 다시 분배법칙적용 및 전개
 
 	return;
 }
@@ -497,19 +462,74 @@ void Pos::printPos(void)
 	}
 	return;
 }
-void Pos::fileOut()
-{
-	ofstream writeFile;            //쓸 목적의 파일 선언
-	writeFile.open("result.txt");    //파일 열기
-	
 
-	Sums* curTemp = getHead();
-	while (curTemp != NULL)
+
+product_node* Pos::FindMinSums(int& minTrans, unsigned short bit_length)
+{
+	product_node* minHead = NULL;
+	product_node* curHead = head->getProduct()->getHead();
+	int bitnum = (int)bit_length - 1;
+
+	char* invertor = new char[bitnum];
+
+	while (curHead)
 	{
-		curTemp->getProduct()->PtoFile();
-		curTemp = curTemp->getNext();
+		for (int i = 0; i < bitnum; i++)
+		{
+			invertor[i] = '1';
+		}
+		product_node* temp = curHead;
+		int compareTrans = 0;
+		int orGate = 0;
+
+		while (temp)
+		{
+			int andGate = 0;
+			orGate++;
+
+			for (int i = 0; i < bitnum; i++)
+			{
+				if (temp->getBinary()[i] == '0')
+				{
+					invertor[i] = '0';
+				}
+
+				if (temp->getBinary()[i] != '-')
+				{
+					andGate++;
+				}
+			}
+
+			if (andGate > 1)
+			{
+				compareTrans += (andGate * 2) + 2;
+			}
+			temp = temp->getMultiNext();
+		}
+
+		if (orGate > 1)
+		{
+			compareTrans += (orGate) * 2 + 2;
+		}
+
+		for (int i = 0; i < bitnum; i++)
+		{
+			if (invertor[i] == '0')
+			{
+				compareTrans += 2;
+			}
+		}
+
+		if (minTrans == -1 || minTrans > compareTrans)
+		{
+			minTrans = compareTrans;
+			minHead = curHead;
+		}
+
+		curHead = curHead->getPlusNext();
 	}
-	
-	writeFile.close();
-	return;
+
+	delete[] invertor;
+
+	return minHead;
 }

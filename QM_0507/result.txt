@@ -1,6 +1,5 @@
-0-0-
--0-0
--00-
-0--0
+00--
+0--1
+111-
 
-Cost (# of transistors): 
+Cost (# of transistors): 32
