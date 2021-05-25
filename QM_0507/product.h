@@ -53,7 +53,6 @@ public:
 	product_node* multiply(product_node*, product_node*, unsigned short);
 	void deleteMulti(void);
 	void deletePlus(void);
-	void printMulti(void);
 	void PtoFile(int, unsigned short);
 };
 
@@ -185,20 +184,8 @@ void product_node::deletePlus(void)
 }
 
 
-void product_node::printMulti(void)
-{
-	cout << getBinary() << endl;
-	product_node* temp = getMultiNext();
 
-	while (temp)
-	{
-		cout << temp->getBinary() << endl;
-		temp = temp->getMultiNext();
-	}
-	return;
-}
-
-void product_node::PtoFile(int trans, unsigned short bit_length)
+void product_node::PtoFile(int trans, unsigned short bit_length)			//result.txt파일로 출력하기위한 메소드
 {
 	ofstream fout;
 	product_node* curTemp = multiNext;
@@ -237,7 +224,6 @@ public:
 	void insert_multiplied_node(product_node*);
 	int isSameProduct(product_node*, product_node*);
 	void DeleteSame(unsigned short);
-	void PrintProduct(void);
 };
 
 
@@ -452,29 +438,6 @@ void Product::DeleteSame(unsigned short bit_length)
 	delete compare1Head;
 
 
-
-	return;
-}
-
-void Product::PrintProduct(void)
-{
-	product_node* curTemp = getHead();
-
-	while (curTemp != NULL)
-	{
-		product_node* curMultiTemp = curTemp;
-		while (curMultiTemp != NULL)
-		{
-			cout << curMultiTemp->getBinary();
-			if (curMultiTemp->getMultiNext() != nullptr)
-				cout << " X ";
-			curMultiTemp = curMultiTemp->getMultiNext();
-		}
-		if(curTemp->getPlusNext() != nullptr)
-			cout << " + ";
-		curTemp = curTemp->getPlusNext();
-	}
-	cout << endl;
 
 	return;
 }

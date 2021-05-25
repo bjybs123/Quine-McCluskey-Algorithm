@@ -146,7 +146,7 @@
     <ClInclude Include="product.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="input.txt" />
+    <Text Include="input_minterm.txt" />
     <Text Include="result.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

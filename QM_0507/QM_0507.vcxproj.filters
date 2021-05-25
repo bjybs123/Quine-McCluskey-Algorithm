@@ -28,7 +28,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="input.txt">
+    <Text Include="input_minterm.txt">
       <Filter>리소스 파일</Filter>
     </Text>
     <Text Include="result.txt">

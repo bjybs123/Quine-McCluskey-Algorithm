@@ -8,10 +8,10 @@ class Node
 {
 private:
 
-	Node* next;
-	int check;
+	Node* next;		//다은 노드를 카르키는 포인터
+	int check;		
 	char* binary;
-	unsigned short one_num;
+	unsigned short one_num;		//노드의 binary에 1의 개수를 저장
 
 public:
 	Node();
@@ -37,7 +37,6 @@ public:
 	Node* getHead();
 	void setHead(Node* headIn);
 	void addNode(unsigned short bit_legth, char* input_binary);
-	void print();
 	void Find(Link*, unsigned short);
 	void groupCompare(Node*, Node*, unsigned short);
 	void compareBinary(Node* compare1, Node* compare2, unsigned short bit_length);
@@ -48,23 +47,23 @@ public:
 
 //Node's method functions
 
-Node::Node()
+Node::Node()		//노드 의 생성자
 {
 	check = false;
 	binary = NULL;
 	next = nullptr;
 	one_num = 0;
 }
-Node::~Node()
+Node::~Node()		//노드 소멸자 
 {
-	delete binary;
+	delete[] binary;		//동적으로 할당을 받은 binary를 해제 시킨다
 }
 Node::Node(unsigned short length)
 {
 	check = false;
 	next = nullptr;
 	one_num = 0;
-	binary = new char[length];
+	binary = new char[length];			//전달받은 length만큼 동적으로 메모리 할당
 }
 int Node::getCheck()
 {
@@ -88,7 +87,6 @@ char* Node::getBinary()
 }
 void Node::setBinary(char* binaryIn)
 {
-
 	int i = 0;
 	while (binaryIn[i] != '\0')
 	{
@@ -96,7 +94,7 @@ void Node::setBinary(char* binaryIn)
 			++one_num;
 		++i;
 	}
-	binary[i] = '\0';
+	binary[i] = '\0';							//들어온 문자열을 binary에 복사. 마지막 문자를 null문자로 문자열의 끝을 알림
 }
 unsigned short Node::getOneNum()
 {
@@ -108,7 +106,8 @@ void Node::checkIncrease()
 }
 
 //Link's method functions
-void Link::deleteNode(char* binaryIn) {
+void Link::deleteNode(char* binaryIn)
+{
 	Node* prevNode = nullptr;
 	Node* currNode = pHead;
 	while (currNode && strcmp(currNode->getBinary(), binaryIn))
@@ -116,12 +115,15 @@ void Link::deleteNode(char* binaryIn) {
 		prevNode = currNode;
 		currNode = currNode->getNext();
 	}
-	if (currNode) {
-		if (prevNode) {
+	if (currNode)
+	{
+		if (prevNode)
+		{
 			prevNode->setNext(currNode->getNext());
 			delete currNode;
 		}
-		else {
+		else
+		{
 			pHead = currNode->getNext();
 			delete currNode;
 		}
@@ -133,12 +135,12 @@ Link::Link()
 }
 Link::~Link()
 {
-	Node* moving = pHead;
-	while (moving)
+	Node* moving = pHead;			//리스트의 소멸자
+	while (moving)					// 첫 노드부터 끝까지 삭제를 시켜준다
 	{
-		pHead = pHead->getNext();
-		delete moving;
-		moving = pHead;
+		pHead = pHead->getNext();	//head를 다음 노드로 옮기고 
+		delete moving;				//해당 노드를 삭제한다.	
+		moving = pHead;				//다시 해당 포인터를 head에 위치시칸다			
 	}
 	pHead = nullptr;
 	return;
@@ -199,16 +201,6 @@ void Link::addNode(unsigned short bit_length, char* input_binary)
 	}
 
 
-}
-void Link::print()
-{
-	Node* tempNode = pHead;
-
-	while (tempNode)
-	{
-		cout << "-->  " << tempNode->getBinary() << "\n";
-		tempNode = tempNode->getNext();
-	}
 }
 void Link::Find(Link* PI, unsigned short bit_length)
 {
@@ -360,7 +352,6 @@ public:
 	void setHead(Sums* headIn);
 	void addLinkToPos(Link*, Link*, unsigned short);
 	void combinePos(unsigned short);
-	void printPos(void);
 	product_node* FindMinSums(int&, unsigned short);
 };
 
@@ -428,14 +419,10 @@ void Pos::combinePos(unsigned short bit_length)		//POS로 정리된 해당 특�
 
 	inputProduct->distribute(curTemp->getProduct(), nextTemp->getProduct(), bit_length);			//두 더하기 항을 분배법칙을 이용해 전개
 	
-	cout << "after multiplying";
-	cout << "\n--> ";
-	inputProduct->PrintProduct();
+	
 
 	inputProduct->DeleteSame(bit_length);
-	cout << "after deleting same terms";
-	cout << "\n--> ";
-	inputProduct->PrintProduct();
+	
 
 	cout << "\n";
 
@@ -452,31 +439,22 @@ void Pos::combinePos(unsigned short bit_length)		//POS로 정리된 해당 특�
 	return;
 }
 
-void Pos::printPos(void)
-{
-	Sums* curTemp = getHead();
-	while (curTemp != NULL)
-	{
-		curTemp->getProduct()->PrintProduct();
-		curTemp = curTemp->getNext();
-	}
-	return;
-}
 
 
-product_node* Pos::FindMinSums(int& minTrans, unsigned short bit_length)
+product_node* Pos::FindMinSums(int& minTrans, unsigned short bit_length)		//전개된 부울식에서 각 항이 function을 만족시키기 떄문에 각 항의 코스트가 적은 항이 최소화된 부울식이다
+	
 {
 	product_node* minHead = NULL;
 	product_node* curHead = head->getProduct()->getHead();
 	int bitnum = (int)bit_length - 1;
 
-	char* invertor = new char[bitnum];
+	char* inverter = new char[bitnum];
 
 	while (curHead)
 	{
 		for (int i = 0; i < bitnum; i++)
 		{
-			invertor[i] = '1';
+			inverter[i] = '1';
 		}
 		product_node* temp = curHead;
 		int compareTrans = 0;
@@ -491,30 +469,30 @@ product_node* Pos::FindMinSums(int& minTrans, unsigned short bit_length)
 			{
 				if (temp->getBinary()[i] == '0')
 				{
-					invertor[i] = '0';
+					inverter[i] = '0';
 				}
 
-				if (temp->getBinary()[i] != '-')
+				if (temp->getBinary()[i] != '-')		//'-'가 아니면 and gate를 늘려준다
 				{
 					andGate++;
 				}
 			}
 
-			if (andGate > 1)
+			if (andGate > 1)							//andGate의 개수 즉 andGate개수 만큼의 AND게이트 가 필요하다 예) andGate = 3 --> 3 input AND
 			{
 				compareTrans += (andGate * 2) + 2;
 			}
 			temp = temp->getMultiNext();
 		}
 
-		if (orGate > 1)
+		if (orGate > 1)								//orGate의 개수 즉 orGate개수 만큼의 OR게이트 가 필요하다 예) odGate = 3 --> 3 input OR
 		{
 			compareTrans += (orGate) * 2 + 2;
 		}
 
 		for (int i = 0; i < bitnum; i++)
 		{
-			if (invertor[i] == '0')
+			if (inverter[i] == '0')				//inverter문자열이 0이라면 각 위치에 해당하는 변수에 인터버가 필요하다는 끗이므로 트랜지스터 개수를 2개 증가시킨다.
 			{
 				compareTrans += 2;
 			}
@@ -529,7 +507,7 @@ product_node* Pos::FindMinSums(int& minTrans, unsigned short bit_length)
 		curHead = curHead->getPlusNext();
 	}
 
-	delete[] invertor;
+	delete[] inverter;
 
 	return minHead;
 }
